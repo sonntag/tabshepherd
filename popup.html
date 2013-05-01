@@ -17,14 +17,14 @@
   <!--
     Popup related functionality.
   -->
-  <script type="text/javascript" src="popup.js"></script>
+  <script type="text/javascript" src="js/popup.js"></script>
 </head>
 
 <body>
 
 <ul class="nav nav-tabs">
   <li><a href="#tabCorral" target="#tabCorral" data-toggle="tab">Tab Corral</a></li>
-  <li><a href="#tabActive" target="#tabActive" data-toggle="tab">Tab Lock</a></li>
+  <li><a href="#tabLock" target="#tabLock" data-toggle="tab">Tab Lock</a></li>
   <li><a href="#tabOptions" target="#tabOptions" data-toggle="tab">Options</a></li>
 </ul>
 
@@ -34,6 +34,45 @@
   </a>
 
 <div class="tab-content">
+  <div class="tab-pane  active" id="tabCorral">
+    <form class="form-search">
+      <input name="search" type="text" class="span9 corral-search search-query" placeholder="search"/>
+    </form>
+      <table id="corralTable" class="table-condensed table-striped table table-bordered">
+        <thead>
+        <tr>
+          <th class="narrowColumn"></th>
+          <th>Title</th>
+          <th class="closedColumn">Closed</th>
+        </tr>
+        </thead>
+        <!--
+           ID is here for BC.  should really be fixed and jQuery based.
+        -->
+        <tbody>
+        </tbody>
+      </table>
+    <div id="autocloseMessage" class="alert alert-info">If tabs are closed automatically, they will be stored here</div>
+    <div class="clearCorralMessage alert alert-info"><a class="clearCorralLink" href="#">Clear list</a></div>
+  </div>
+
+  <div class="tab-pane" id="tabLock">
+    <div class="alert alert-info">Click the checkbox to lock the tab (prevent it from auto-closing).</div>
+      <table id="activeTabs" class="table-striped table table-bordered">
+        <thead>
+        <tr>
+          <th class="narrowColumn"><img src="img/lock.png"/></th>
+          <th class="narrowColumn"></th>
+          <th>Tab</th>
+          <th class="countdownColumn">Expires in</th>
+        </tr>
+        </thead>
+        <!-- Class is a total kludge to keep popup=lock working -->
+        <tbody>
+
+        </tbody>
+      </table>
+    </div>
 
   <div class="tab-pane" id="tabOptions">
     <form class="well">
@@ -41,27 +80,27 @@
         <legend>Settings</legend>
         <p>
           <label for="minutesInactive">Close inactive tabs after:</label>
-          <input type="text" id="minutesInactive" class="span1" name="minutesInactive"> minutes.
+          <input type="text" id="minutesInactive" class="span1" name="minutesInactive" /> minutes.
         </p>
 
         <p>
           <label for="minTabs">Don't auto-close if I only have</label>
-          <input type="text" id="minTabs" class="span1" name="minTabs"> tabs open
+          <input type="text" id="minTabs" class="span1" name="minTabs" /> tabs open
         </p>
 
         <p>
           <label for="purgeClosedTabs" class="checkbox">Clear closed tabs list on quit
-            <input type="checkbox" id="purgeClosedTabs" class="span1" name="purgeClosedTabs">
+            <input type="checkbox" id="purgeClosedTabs" class="span1" name="purgeClosedTabs" />
             </label>
         </p>
         <p>
           <label for="showBadgeCount" class="checkbox">Show # of closed tabs in url bar
-            <input type="checkbox" id="showBadgeCount" class="span1" name="showBadgeCount">
+            <input type="checkbox" id="showBadgeCount" class="span1" name="showBadgeCount" />
             </label>
         </p>
         <p>
           <label for="enableSync" class="checkbox">Sync settings between Chrome browsers
-            <input type="checkbox" id="enableSync" class="span1" name="enableSync">
+            <input type="checkbox" id="enableSync" class="span1" name="enableSync" />
             </label>
         </p>
       </fieldset>
@@ -85,53 +124,14 @@
           <tbody>
           </tbody>
         </table>
-  <span class="help-block">
-    Example: <i>cnn</i> would match every page on cnn.com and any URL with cnn anywhere in url.
-  </span>
+        <span class="help-block">
+          Example: <i>cnn</i> would match every page on cnn.com and any URL with cnn anywhere in url.
+        </span>
       </fieldset>
     </form>
   </div>
+</div>
 
 
-  <div class="tab-pane  active" id="tabCorral">
-    <form class="form-search">
-      <input name="search" type="text" class="span9 corral-search search-query" placeholder="search"/>
-    </form>
-      <table id="corralTable" class="table-condensed table-striped table table-bordered">
-        <thead>
-        <tr>
-          <th class="narrowColumn"></th>
-          <th>Title</th>
-          <th class="closedColumn">Closed</th>
-        </tr>
-        </thead>
-        <!--
-           ID is here for BC.  should really be fixed and jQuery based.
-        -->
-        <tbody>
-        </tbody>
-      </table>
-    <div id="autocloseMessage" class="alert alert-info">If tabs are closed automatically, they will be stored here</div>
-    <div class="clearCorralMessage alert alert-info"><a class="clearCorralLink" href="#">Clear list</a></div>
-  </div>
-
-  <div class="tab-pane" id="tabActive">
-    <div class="alert alert-info">Click the checkbox to lock the tab (prevent it from auto-closing).</div>
-      <table id="activeTabs" class="table-striped table table-bordered">
-        <thead>
-        <tr>
-          <th class="narrowColumn"><img src="img/lock.png"/></th>
-          <th class="narrowColumn"></th>
-          <th>Tab</th>
-          <th class="countdownColumn">Expires in</th>
-        </tr>
-        </thead>
-        <!-- Class is a total kludge to keep popup=lock working -->
-        <tbody>
-
-        </tbody>
-      </table>
-    </div>
-  </div>
 </body>
 </html>

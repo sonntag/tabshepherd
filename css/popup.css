@@ -1,6 +1,6 @@
 body {
-  width:700px;
-  overflow-x:hidden;
+  width: 700px;
+  overflow-x: hidden;
 }
 
 .favicon {
@@ -19,7 +19,7 @@ body {
 }
 
 #status {
-  margin-bottom:2px;
+  margin-bottom: 2px;
 }
 
 legend {
@@ -30,7 +30,7 @@ legend {
   width: 20px;
 }
 
-#tabActive table {
+#tabLock table {
   table-layout: fixed;
 }
 
@@ -42,23 +42,23 @@ legend {
   width: 200px;
 }
 
-#tabActive .tabTitle {
+#tabLock .tabTitle {
   font-weight: bolder;
 }
 
 .nav-tabs {
-  float:left;
+  float: left;
 }
 
 #pauseButton {
   float: right;
   margin-top: 10px;
-  margin-right:15px;
+  margin-right: 15px;
   vertical-align: top;
 }
 
 .tab-content {
-  clear:both;
+  clear: both;
 }
 
 

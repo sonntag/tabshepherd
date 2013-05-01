@@ -1,4 +1,4 @@
-# Tab Wrangler
+# Tab Shepherd
 
 Auto-closes tabs which you haven't used in awhile.
 
@@ -7,9 +7,8 @@ Auto-closes tabs which you haven't used in awhile.
 * *The Corral*: Stores tabs which have been auto-closed so you can re-open as required.
 * *Exclude list*: Provide the urls or domain names of the sites you never want auto-closed.
 * *Tab Lock*: Pick open tabs to "lock".  Locked tabs will not be auto-closed.
-* *Configurable*: Pick how long a tab should be considered ready to close and how many tabs should be open at a minimum. 
-* *Smart*: Doesn't autoclose pinned tabs, doesn't close all your tabs,
-  just enough to make your browser usable.
+* *Configurable*: Pick how long a tab should be considered ready to close and how many tabs should be open at a minimum.
+* *Smart*: Doesn't autoclose pinned tabs, doesn't close all your tabs, just enough to make your browser usable.
 
 ## Usage / Installation
 
@@ -30,7 +29,6 @@ Auto-closes tabs which you haven't used in awhile.
 
 ## Creds:
 
-Original extension and idea by [jacktasia](https://github.com/jacktasia/tabwrangler) in 2010. 
-Rewriten by [JacobSingh](https://github.com/jacobSingh) in 2012.
-
-
+Original extension and idea by [jacktasia](https://github.com/jacktasia/tabwrangler) in 2010.
+Rewritten by [JacobSingh](https://github.com/jacobSingh) in 2012.
+Rewritten and rebranded by [sonntag](https://github.com/sonntag/tabshepherd) in 2013.

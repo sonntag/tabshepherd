@@ -7,8 +7,8 @@ TW.Updater = {}
 TW.Updater.firstInstall = function() {
   var notification = window.webkitNotifications.createNotification(
     'img/icon48.png',                      // The image.
-    'Tab Wrangler is installed',
-    'Tab wrangler is now auto-closing tabs after ' + TW.settings.get('minutesInactive') + ' minutes. \n\
+    'Tab Shepherd is installed',
+    'Tab Shepherd is now auto-closing tabs after ' + TW.settings.get('minutesInactive') + ' minutes. \n\
 To change this setting, click on the new icon on your URL bar.'
   );
   notification.show();

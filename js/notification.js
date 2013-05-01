@@ -12,22 +12,22 @@ $(document).ready(function() {
       while (match = search.exec(query))
         urlParams[decode(match[1])] = decode(match[2]);
   })();
-  
+
   var content = 'Empty notification.  Something went wrong here!';
-  var title = "Tab Wrangler";
-  
+  var title = "Tab Shepherd";
+
   if (typeof urlParams['title'] != 'undefined') {
     title = urlParams['title'];
   }
-  
+
   if (typeof urlParams['message'] != 'undefined') {
     content = urlParams['message'];
-    
+
   } else if (typeof urlParams['file'] != 'undefined') {
     $.get('notifications/' + urlParams['file'], {}, function(data) {content = data});
   }
-  
+
   $('#main').html(content);
   $('#title').text(title)
-  
+
 });

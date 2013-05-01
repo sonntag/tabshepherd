@@ -1,5 +1,5 @@
 /**
- * @file: Initializes Tab Wrangler on startup.
+ * @file: Initializes Tab Shepherd on startup.
  */
 
 function startup() {
