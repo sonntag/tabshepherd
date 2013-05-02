@@ -30,14 +30,17 @@ TW.Updater.runUpdates = function(previous, current) {
   // Run all updates
   _.map(sortedUpdates, function(update) { update.fx(); });
 
-  var currentUpdate = _.findWhere(TW.Updater.updates, { version: current })
-  if (currentUpdate) { currentUpdate.finished(); }
+  // Show desktop notification
+  var notification = window.webkitNotifications.createNotification(
+    'img/icon48.png', 'Updated to version ' + current,
+    'Click to view the change log.');
+
+  notification.show();
 }
 
 TW.Updater.updates = [
   {
     version: '3.0',
-    fx: function() {},
-    finished: function() {}
+    fx: function() {}
   }
 ]
