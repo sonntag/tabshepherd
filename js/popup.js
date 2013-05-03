@@ -313,10 +313,11 @@ TW.activeTab.buildTabLockTable = function (tabs) {
 
       var lastModified = TW.TabManager.openTabs[tabs[i].id].time;
       var timeLeft = -1 * (Math.round((cutOff - lastModified) / 1000)).toString();
+      var $timer = $('<td></td>').attr('class', 'time-left');
       if (TW.TabManager.paused) {
-        $timer = $('<td class="time-left">paused</td>');
+        $timer.text('paused');
       } else {
-        $timer = $('<td class="time-left">' + secondsToMinutes(timeLeft) + '</td>');
+        $timer.text(secondsToMinutes(timeLeft));
       }
 
       $timer.data('countdown', timeLeft);
