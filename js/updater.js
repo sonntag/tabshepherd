@@ -34,7 +34,9 @@ TW.Updater.runUpdates = function(previous, current) {
   var notification = window.webkitNotifications.createNotification(
     'img/icon48.png', 'Updated to version ' + current,
     'Click to view the change log.');
-
+  notification.onclick = function() {
+    chrome.tabs.create({ url: "https://github.com/sonntag/tabshepherd/blob/master/CHANGELOG.md" });
+  }
   notification.show();
 }
 
