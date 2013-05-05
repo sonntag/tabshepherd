@@ -176,13 +176,12 @@ TW.corralTab.buildTable = function(closedTabs) {
       return false;
     });
 
-    var $clear = $('<img />').attr('class', 'clearButton').attr('src', 'img/clear.png').hide();
+    var $clear = $('<button>').attr('type', 'button').attr('class', 'close clearButton');
+    $clear.append('&times;').hide();
     $clear.click(function() {
       TW.TabManager.closedTabs.removeTab($(this).data('tabid'));
       $(this).parent().parent().remove();
     });
-    $clear.hover(function() { $clear.attr('src', 'img/clear-hover.png'); },
-                function() { $clear.attr('src', 'img/clear.png'); });
 
     $tr.hover(function() { $clear.fadeIn(100); }, function() { $clear.fadeOut(100); });
     $tr.append($('<td></td/>').append($link).append($clear));
