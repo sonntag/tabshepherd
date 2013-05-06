@@ -25,6 +25,7 @@
 <ul class="nav nav-tabs">
   <li><a href="#tabCorral" target="#tabCorral" data-toggle="tab">Tab Corral</a></li>
   <li><a href="#tabLock" target="#tabLock" data-toggle="tab">Tab Lock</a></li>
+  <li><a href="#tabWhitelist" target="#tabWhitelist" data-toggle="tab">Auto-Lock</a></li>
   <li><a href="#tabOptions" target="#tabOptions" data-toggle="tab">Options</a></li>
 </ul>
 
@@ -74,6 +75,33 @@
       </table>
     </div>
 
+  <div class="tab-pane" id="tabWhitelist">
+    <form class="well">
+      <fieldset>
+        <legend>Auto-Lock</legend>
+        <label for="wl-add">tabs with urls "like":</label>
+        <input type="text" id="wl-add" />
+        <button class="btn-mini add-on" id="addToWL" disabled>Add</button>
+
+        <table class="table table-bordered table-striped" id="whitelist">
+          <thead>
+          <th>
+            Url pattern
+          </th>
+          <th>
+
+          </th>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+        <span class="help-block">
+          Example: <i>cnn</i> would match every page on cnn.com and any URL with cnn anywhere in url.
+        </span>
+      </fieldset>
+    </form>
+  </div>
+
   <div class="tab-pane" id="tabOptions">
     <form class="well">
       <fieldset>
@@ -106,28 +134,6 @@
       </fieldset>
       <div id="status" class="alert alert-success" style="visibility:hidden;"></div>
 
-      <fieldset>
-        <legend>Auto-Lock</legend>
-        <label for="wl-add">tabs with urls "like":</label>
-        <input type="text" id="wl-add" />
-        <button class="btn-mini add-on" id="addToWL" disabled>Add</button>
-
-        <table class="table table-bordered table-striped" id="whitelist">
-          <thead>
-          <th>
-            Url pattern
-          </th>
-          <th>
-
-          </th>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-        <span class="help-block">
-          Example: <i>cnn</i> would match every page on cnn.com and any URL with cnn anywhere in url.
-        </span>
-      </fieldset>
     </form>
   </div>
 </div>
