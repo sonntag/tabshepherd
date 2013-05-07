@@ -6,6 +6,7 @@ $(document).ready(function() {
   TW.pauseButton.init();
   TW.corralTab.init();
   TW.activeTab.init();
+  TW.whitelistTab.init();
   TW.optionsTab.init();
 
   $('a[href="#tabCorral"]').tab('show');
@@ -348,6 +349,69 @@ TW.activeTab.buildTabLockTable = function (tabs) {
 }
 
 
+TW.whitelistTab = {};
+
+TW.whitelistTab.init = function(context) {
+
+  $('#whitelist').addOption = function(key, val) {
+    this.append($('<option />').value(val).text(key));
+  }
+
+  var whitelist = TW.settings.get('whitelist');
+  TW.whitelistTab.buildWLTable(whitelist);
+
+  var $wlInput = $('#wl-add');
+  var $wlAdd = $('#addToWL');
+  var isValid = function(pattern) {
+    // some other choices such as '/' also do not make sense
+    // not sure if they should be blocked as well
+    return /\S/.test(pattern);
+  }
+
+  $wlInput.on('input', function() {
+    if (isValid($wlInput.val())) {
+      $wlAdd.removeAttr('disabled');
+    }
+    else {
+      $wlAdd.attr('disabled', 'disabled');
+    }
+  });
+
+  $wlAdd.click(function() {
+    var value = $wlInput.val();
+    // just in case
+    if (!isValid(value)) {
+      return;
+    }
+    whitelist.push(value);
+    $wlInput.val('').trigger('input').focus();
+    TW.optionsTab.saveOption('whitelist', whitelist);
+    TW.whitelistTab.buildWLTable(whitelist);
+    return false;
+  });
+}
+
+TW.whitelistTab.buildWLTable = function(whitelist) {
+  var $wlTable = $('table#whitelist tbody');
+  $wlTable.html('');
+  for (var i=0; i < whitelist.length; i++) {
+    $tr = $('<tr></tr>');
+    $urlTd = $('<td></td>').text(whitelist[i]);
+    $deleteLink = $('<a class="deleteLink" href="#">Remove</a>')
+    .click(function() {
+      whitelist.remove(whitelist.indexOf($(this).data('pattern')));
+      TW.optionsTab.saveOption('whitelist', whitelist);
+      TW.whitelistTab.buildWLTable(whitelist);
+    })
+    .data('pattern', whitelist[i]);
+
+    $tr.append($urlTd);
+    $tr.append($('<td></td>').append($deleteLink));
+    $wlTable.append($tr);
+  }
+}
+
+
 TW.optionsTab = {};
 
 /**
@@ -422,70 +486,5 @@ TW.optionsTab.loadOptions = function () {
   }
   if (TW.settings.enableSync) {
     $('#enableSync').attr('checked', true);
-  }
-
-  $('#whitelist').addOption = function(key, val) {
-    this.append(
-    $('<option />')
-    .value(val)
-    .text(key)
-  );
-  }
-
-  var whitelist = TW.settings.get('whitelist');
-  TW.optionsTab.buildWLTable(whitelist);
-
-  var whitelist = TW.settings.get('whitelist');
-  TW.optionsTab.buildWLTable(whitelist);
-
-  var $wlInput = $('#wl-add');
-  var $wlAdd = $('#addToWL');
-  var isValid = function(pattern) {
-    // some other choices such as '/' also do not make sense
-    // not sure if they should be blocked as well
-    return /\S/.test(pattern);
-  }
-
-  $wlInput.on('input', function() {
-    if (isValid($wlInput.val())) {
-      $wlAdd.removeAttr('disabled');
-    }
-    else {
-      $wlAdd.attr('disabled', 'disabled');
-    }
-  });
-
-  $wlAdd.click(function() {
-    var value = $wlInput.val();
-    // just in case
-    if (!isValid(value)) {
-      return;
-    }
-    whitelist.push(value);
-    $wlInput.val('').trigger('input').focus();
-    TW.optionsTab.saveOption('whitelist', whitelist);
-    TW.optionsTab.buildWLTable(whitelist);
-    return false;
-  });
-
-}
-
-TW.optionsTab.buildWLTable = function(whitelist) {
-  var $wlTable = $('table#whitelist tbody');
-  $wlTable.html('');
-  for (var i=0; i < whitelist.length; i++) {
-    $tr = $('<tr></tr>');
-    $urlTd = $('<td></td>').text(whitelist[i]);
-    $deleteLink = $('<a class="deleteLink" href="#">Remove</a>')
-    .click(function() {
-      whitelist.remove(whitelist.indexOf($(this).data('pattern')));
-      TW.optionsTab.saveOption('whitelist', whitelist);
-      TW.optionsTab.buildWLTable(whitelist);
-    })
-    .data('pattern', whitelist[i]);
-
-    $tr.append($urlTd);
-    $tr.append($('<td></td>').append($deleteLink));
-    $wlTable.append($tr);
   }
 }
