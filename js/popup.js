@@ -8,8 +8,6 @@ $(document).ready(function() {
   TW.activeTab.init();
   TW.whitelistTab.init();
   TW.optionsTab.init();
-
-  $('a[href="#tabCorral"]').tab('show');
 });
 
 
@@ -22,7 +20,7 @@ TW.pauseButton.init = function() {
   } else {
     this.play();
   }
-  this.elem = $('a#pauseButton');
+  this.elem = $('#pauseButton');
 
   this.elem.click(function() {
     if (TW.TabManager.paused) {
@@ -126,7 +124,7 @@ TW.corralTab.buildTable = function(closedTabs) {
 
   function createGroupRow(timeGroup, $tbody) {
     var $tr = $('<tr class="info"></tr>');
-    $button = $('<button class="btn btn-mini btn-primary" style="float:right;">restore all</button>').click(function() {
+    $button = $('<button class="btn btn-mini btn-primary pull-right">restore all</button>').click(function() {
       $('tr[data-group="' + timeGroup + '"]').each(function() {
         $('a', this).click();
       });
@@ -144,9 +142,7 @@ TW.corralTab.buildTable = function(closedTabs) {
     var $img_td = $('<td></td>');
     if (tab.favIconUrl != null && tab.favIconUrl != undefined && tab.favIconUrl.length > 0) {
       // We have an image to show.
-      var $img_icon = $('<img />')
-      .attr('class', 'favicon')
-      .attr('src', tab.favIconUrl)
+      var $img_icon = $('<img />').attr('class', 'favicon').attr('src', tab.favIconUrl);
       $img_td.append($img_icon);
     } else {
       $img_td.text('-');
@@ -177,7 +173,7 @@ TW.corralTab.buildTable = function(closedTabs) {
       return false;
     });
 
-    var $clear = $('<button>').attr('type', 'button').attr('class', 'close clearButton');
+    var $clear = $('<button>').attr('type', 'button').attr('class', 'close pull-right');
     $clear.append('&times;').hide();
     $clear.click(function() {
       TW.TabManager.closedTabs.removeTab($(this).data('tabid'));

@@ -10,10 +10,6 @@ body {
   margin: 0px;
 }
 
-.clearButton {
-  float: right;
-}
-
 .table td{
   font-size: 11px;
 }
@@ -46,12 +42,7 @@ legend {
   font-weight: bolder;
 }
 
-.nav-tabs {
-  float: left;
-}
-
 #pauseButton {
-  float: right;
   margin-top: 10px;
   margin-right: 15px;
   vertical-align: top;

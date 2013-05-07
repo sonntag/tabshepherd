@@ -1,6 +1,7 @@
 <!-- // chrome-extension://bfbjlhinlheecjobilndbilkfpkmgiao/popup.html -->
-<html>
+<html lang="en">
 <head>
+  <meta charset="utf-8">
 
   <script src="lib/jquery/js/jquery-1.7.2.min.js" type="text/javascript"></script>
   <script src="lib/js/jquery.timeago.js" type="text/javascript"></script>
@@ -22,20 +23,20 @@
 
 <body>
 
-<ul class="nav nav-tabs">
-  <li><a href="#tabCorral" target="#tabCorral" data-toggle="tab">Tab Corral</a></li>
+<ul class="nav nav-tabs pull-left">
+  <li class="active"><a href="#tabCorral" target="#tabCorral" data-toggle="tab">Tab Corral</a></li>
   <li><a href="#tabLock" target="#tabLock" data-toggle="tab">Tab Lock</a></li>
   <li><a href="#tabWhitelist" target="#tabWhitelist" data-toggle="tab">Auto-Lock</a></li>
   <li><a href="#tabOptions" target="#tabOptions" data-toggle="tab">Options</a></li>
 </ul>
 
-<a href="javascript:void(0);" id="pauseButton" class="btn btn-mini">
+<button id="pauseButton" class="btn btn-mini pull-right" data-toggle="button">
   <span class="unpaused-state"><i class="icon-pause"></i> Pause</span>
   <span class="paused-state"><i class="icon-play"></i> Resume</span>
-  </a>
+</button>
 
 <div class="tab-content">
-  <div class="tab-pane  active" id="tabCorral">
+  <div class="tab-pane active" id="tabCorral">
     <form class="form-search">
       <input name="search" type="text" class="span9 corral-search search-query" placeholder="search"/>
     </form>
