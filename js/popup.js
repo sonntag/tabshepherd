@@ -76,13 +76,13 @@ TW.corralTab.init = function(context) {
     // stop execution on this page
   }
 
-  $('.corral-search').keyup(_.debounce(
+  $('#corral-search').keyup(_.debounce(
   function() {
     var keyword = $(this).val();
     TW.TabManager.searchTabs(self.buildTable, [TW.TabManager.filters.keyword(keyword)]);
   }, 200));
 
-  $('.corral-search').delay(1000).focus();
+  $('#corral-search').delay(1000).focus();
 }
 
 TW.corralTab.buildTable = function(closedTabs) {
