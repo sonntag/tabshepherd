@@ -2,3 +2,4 @@
 *.html~
 *.json~
 dist/*
+.DS_Store
