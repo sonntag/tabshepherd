@@ -15,7 +15,7 @@ body {
   font-size: 11px;
 }
 
-table {
+.table-white {
   background-color: white;
 }
 
@@ -55,6 +55,8 @@ legend {
 
 .tab-content {
   clear: both;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 

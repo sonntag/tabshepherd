@@ -38,9 +38,9 @@
 <div class="tab-content">
   <div class="tab-pane active" id="tabCorral">
     <form class="form-search">
-      <input name="search" type="text" class="span9 corral-search search-query" placeholder="search"/>
+      <input name="search" type="text" class="corral-search search-query" placeholder="search"/>
     </form>
-      <table id="corralTable" class="table-condensed table-striped table table-bordered">
+      <table id="corralTable" class="table table-condensed table-striped table-bordered table-white">
         <thead>
         <tr>
           <th class="narrowColumn"></th>
@@ -60,7 +60,7 @@
 
   <div class="tab-pane" id="tabLock">
     <div class="alert alert-info">Click the checkbox to lock the tab (prevent it from auto-closing).</div>
-      <table id="activeTabs" class="table-striped table table-bordered">
+      <table id="activeTabs" class="table-striped table table-bordered table-white">
         <thead>
         <tr>
           <th class="narrowColumn"><i class='icon-lock' /></th>
@@ -78,23 +78,17 @@
 
   <div class="tab-pane" id="tabWhitelist">
     <form class="well">
-      <fieldset>
-        <legend>Auto-Lock</legend>
         <label for="wl-add">tabs with urls "like":</label>
 
-        <div>
-          <input type="text" id="wl-add" />
-          <button class="btn-mini" id="addToWL" disabled>Add</button>
-        </div>
+        <input type="text" id="wl-add" />
+        <button class="btn-mini" id="addToWL" disabled>Add</button>
 
         <table class="table" id="whitelist">
           <thead>
-          <th>
-            Url pattern
-          </th>
-          <th>
-
-          </th>
+              <th>
+                Url pattern
+              </th>
+              <th></th>
           </thead>
           <tbody>
           </tbody>
@@ -102,22 +96,20 @@
         <span class="help-block">
           Example: <i>cnn</i> would match every page on cnn.com and any URL with cnn anywhere in url.
         </span>
-      </fieldset>
     </form>
   </div>
 
   <div class="tab-pane" id="tabOptions">
     <form class="well">
       <fieldset>
-        <legend>Settings</legend>
         <p>
           <label for="minutesInactive">Close inactive tabs after:</label>
           <input type="text" id="minutesInactive" class="span1" name="minutesInactive" /> minutes.
         </p>
 
         <p>
-          <label for="minTabs">Don't auto-close if I only have</label>
-          <input type="text" id="minTabs" class="span1" name="minTabs" /> tabs open
+          <label for="minTabs">Don't auto-close if I only have:</label>
+          <input type="text" id="minTabs" class="span1" name="minTabs" /> tabs open (not including pinned tabs).
         </p>
 
         <p>
