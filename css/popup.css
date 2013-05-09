@@ -21,6 +21,7 @@ body {
 
 #status {
   margin-bottom: 2px;
+  visibility: hidden;
 }
 
 legend {
@@ -58,6 +59,3 @@ legend {
   padding-left: 10px;
   padding-right: 10px;
 }
-
-
-

@@ -31,9 +31,9 @@
   <li><a href="#tabOptions" target="#tabOptions" data-toggle="tab">Options</a></li>
 </ul>
 
-<button id="pauseButton" class="btn btn-mini pull-right" data-toggle="button">
-  <span class="unpaused-state"><i class="icon-pause"></i> Pause</span>
-  <span class="paused-state"><i class="icon-play"></i> Resume</span>
+<button id="pauseButton" class="btn btn-small pull-right" data-toggle="button">
+  <span class="unpaused-state"><i class="icon-pause"></i> pause</span>
+  <span class="paused-state"><i class="icon-play"></i> resume</span>
 </button>
 
 <div class="tab-content">
@@ -56,7 +56,7 @@
         </tbody>
       </table>
     <div id="autocloseMessage" class="alert alert-info">If tabs are closed automatically, they will be stored here</div>
-    <div class="clearCorralMessage alert alert-info"><a class="clearCorralLink" href="#">Clear list</a></div>
+    <div class="clearCorralMessage alert alert-info"><a class="clearCorralLink" href="#">clear list</a></div>
   </div>
 
   <div class="tab-pane" id="tabLock">
@@ -79,17 +79,17 @@
 
   <div class="tab-pane" id="tabWhitelist">
     <form class="well">
-        <label for="wl-add">tabs with urls "like":</label>
+        <label for="wl-add">Tabs with URLs "like":</label>
 
         <div class="input-append">
             <input type="text" id="wl-add" />
-            <button class="btn" type="button" id="addToWL" disabled>Add</button>
+            <button class="btn" type="button" id="addToWL" disabled>add</button>
         </div>
 
         <table class="table" id="whitelist">
           <thead>
               <th>
-                Url pattern
+                URL pattern
               </th>
               <th></th>
           </thead>
@@ -97,7 +97,7 @@
           </tbody>
         </table>
         <span class="help-block">
-          Example: <i>cnn</i> would match every page on cnn.com and any URL with cnn anywhere in url.
+          Example: <i>cnn</i> would match every page on cnn.com and any URL with cnn anywhere in URL.
         </span>
     </form>
   </div>
@@ -116,22 +116,22 @@
         </p>
 
         <p>
-          <label for="purgeClosedTabs" class="checkbox">Clear closed tabs list on quit
+          <label for="purgeClosedTabs" class="checkbox">Clear tab corral on quit
             <input type="checkbox" id="purgeClosedTabs" class="span1" name="purgeClosedTabs" />
             </label>
         </p>
         <p>
-          <label for="showBadgeCount" class="checkbox">Show # of closed tabs in url bar
+          <label for="showBadgeCount" class="checkbox">Show # of closed tabs in URL bar
             <input type="checkbox" id="showBadgeCount" class="span1" name="showBadgeCount" />
             </label>
         </p>
         <p>
-          <label for="enableSync" class="checkbox">Sync settings between Chrome browsers
+          <label for="enableSync" class="checkbox">Sync options between Chrome browsers
             <input type="checkbox" id="enableSync" class="span1" name="enableSync" />
             </label>
         </p>
       </fieldset>
-      <div id="status" class="alert alert-success" style="visibility:hidden;"></div>
+      <div id="status" class="alert alert-success">Saving...</div>
 
     </form>
   </div>
