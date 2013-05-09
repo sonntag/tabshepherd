@@ -15,8 +15,10 @@ TW.pauseButton = {};
 
 TW.pauseButton.init = function() {
   var self = this;
+
   if (TW.TabManager.paused) {
     this.pause();
+    $('#pauseButton').addClass('active');
   } else {
     this.play();
   }

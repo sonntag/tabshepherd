@@ -1,3 +1,7 @@
+##1.0.1
+
+* FIX: Pause button toggle state works when popup is closed and reopened
+
 ##1.0
 
 * CHANGED: Rebranded Tab Wrangler as Tab Shepherd
