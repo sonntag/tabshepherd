@@ -31,6 +31,13 @@ function startup() {
     }
   });
 
+  // Handler for removing duplicate tabs from the corral
+  chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    if (TW.settings.get('removeCorralDupes') && _.has(changeInfo, 'url')) {
+      TW.TabManager.closedTabs.removeDuplicate(changeInfo.url);
+    }
+  })
+
   chrome.tabs.onRemoved.addListener(TW.TabManager.removeTab);
   chrome.tabs.onActivated.addListener(function(tabInfo) {
     TW.contextMenuHandler.updateContextMenus(tabInfo.tabId);

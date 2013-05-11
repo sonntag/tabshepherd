@@ -438,6 +438,7 @@ TW.optionsTab.init = function(context) {
   $('#purgeClosedTabs').change(onChangeCheckBox);
   $('#showBadgeCount').change(onChangeCheckBox);
   $('#enableSync').change(onChangeCheckBox);
+  $('#removeCorralDupes').change(onChangeCheckBox);
 
   TW.optionsTab.loadOptions();
 }
@@ -484,5 +485,8 @@ TW.optionsTab.loadOptions = function () {
   }
   if (TW.settings.enableSync) {
     $('#enableSync').attr('checked', true);
+  }
+  if (TW.settings.get('removeCorralDupes')) {
+    $('#removeCorralDupes').attr('checked', true);
   }
 }

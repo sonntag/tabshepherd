@@ -15,6 +15,7 @@ TW.settings = {
     minTabs: 5, // Stop acting if there are only minTabs tabs open.
     purgeClosedTabs: false, // Save closed tabs in between browser sessions.
     showBadgeCount: true, // Save closed tabs in between browser sessions.
+    removeCorralDupes: true, // Remove duplicate tabs from the corral by comparing URL
     whitelist: new Array(), // An array of patterns to check against.  If a URL matches a pattern, it is never locked.
   },
   cache: {}

@@ -1,6 +1,7 @@
-##1.0.1
+##1.1
 
 * FIX: Pause button toggle state works when popup is closed and reopened
+* ADDED: New setting to remove duplicate tabs from the corral
 
 ##1.0
 

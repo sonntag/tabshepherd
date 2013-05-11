@@ -276,6 +276,15 @@ TW.TabManager.closedTabs.clear = function() {
   TW.TabManager.updateClosedCount();
 };
 
+TW.TabManager.closedTabs.removeDuplicate = function(url) {
+
+  var tabsToRemove = _.filter(TW.TabManager.closedTabs.tabs, function(tab) {
+    return tab.url == url;
+  });
+  var tabIdsToRemove = _.pluck(tabsToRemove, 'id');
+  _.map(tabIdsToRemove, TW.TabManager.closedTabs.removeTab);
+}
+
 TW.TabManager.isWhitelisted = function(url) {
   var whitelist = TW.settings.get("whitelist");
   return _.any(whitelist, function(item) { return url.indexOf(item) != -1 });
