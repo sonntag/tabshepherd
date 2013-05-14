@@ -269,7 +269,6 @@ TW.TabManager.closedTabs.findPositionById = function(id) {
   }
 };
 
-
 TW.TabManager.closedTabs.clear = function() {
   TW.TabManager.closedTabs.tabs = [];
   chrome.storage.local.remove('savedTabs');
@@ -283,6 +282,13 @@ TW.TabManager.closedTabs.removeDuplicate = function(url) {
   });
   var tabIdsToRemove = _.pluck(tabsToRemove, 'id');
   _.map(tabIdsToRemove, TW.TabManager.closedTabs.removeTab);
+}
+
+TW.TabManager.closedTabs.openLatestTab = function() {
+  var tabToOpen = TW.TabManager.closedTabs.tabs.pop();
+  chrome.tabs.create({ active:true, url: tabToOpen.url });
+  chrome.storage.local.set({ savedTabs: TW.TabManager.closedTabs.tabs });
+  TW.TabManager.updateClosedCount();
 }
 
 TW.TabManager.isWhitelisted = function(url) {

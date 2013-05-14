@@ -36,7 +36,7 @@ function startup() {
     if (TW.settings.get('removeCorralDupes') && _.has(changeInfo, 'url')) {
       TW.TabManager.closedTabs.removeDuplicate(changeInfo.url);
     }
-  })
+  });
 
   chrome.tabs.onRemoved.addListener(TW.TabManager.removeTab);
   chrome.tabs.onActivated.addListener(function(tabInfo) {
@@ -46,6 +46,12 @@ function startup() {
   chrome.tabs.onReplaced.addListener(TW.TabManager.replaceTab);
 
   chrome.storage.onChanged.addListener(TW.settings.copySyncChanges);
+
+  chrome.commands.onCommand.addListener(function(command) {
+    if (command == 'reopen-corral-tab') {
+      TW.TabManager.closedTabs.openLatestTab();
+    }
+  });
 
   // Create the "lock tab" context menu:
   TW.contextMenuHandler.createContextMenus();

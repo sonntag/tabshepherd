@@ -21,5 +21,11 @@
   "web_accessible_resources": [
     "img/icon48.png"
   ],
-  "permissions": [ "tabs", "notifications", "storage", "contextMenus" ]
+  "permissions": [ "tabs", "notifications", "storage", "contextMenus" ],
+  "commands": {
+    "reopen-corral-tab": {
+      "suggested_key": { "default": "Alt+Shift+T" },
+      "description": "Opens the most recently saved tab from the corral."
+    }
+  }
 }
