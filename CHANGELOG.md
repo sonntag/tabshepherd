@@ -1,3 +1,10 @@
+##1.2
+
+* CHANGED: Corral order is reversed so the most recently closed tab is at the top.
+* ADDED: Keyboard shortcut to open last saved tab from the corral.
+  * Defaults to Alt+Shift+T
+  * Can be changed with the keyboard shortcuts link at the bottom of chrome://extensions/
+
 ##1.1
 
 * FIX: Pause button toggle state works when popup is closed and reopened
