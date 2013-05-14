@@ -114,7 +114,7 @@ TW.TabManager.wrangleAndClose = function(tabId) {
     chrome.tabs.remove(tabId, function() {
 
       var tabToSave = _.extend(_.pick(tab, 'url', 'title', 'favIconUrl', 'id'), { closedAt: new Date().getTime() });
-      TW.TabManager.closedTabs.tabs.push(tabToSave);
+      TW.TabManager.closedTabs.tabs.unshift(tabToSave);
 
       chrome.storage.local.set({ savedTabs: TW.TabManager.closedTabs.tabs });
       TW.TabManager.updateClosedCount();
@@ -285,7 +285,7 @@ TW.TabManager.closedTabs.removeDuplicate = function(url) {
 }
 
 TW.TabManager.closedTabs.openLatestTab = function() {
-  var tabToOpen = TW.TabManager.closedTabs.tabs.pop();
+  var tabToOpen = TW.TabManager.closedTabs.tabs.shift();
   chrome.tabs.create({ active:true, url: tabToOpen.url });
   chrome.storage.local.set({ savedTabs: TW.TabManager.closedTabs.tabs });
   TW.TabManager.updateClosedCount();
