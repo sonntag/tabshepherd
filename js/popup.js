@@ -204,11 +204,15 @@ TW.corralTab.buildTable = function(closedTabs) {
 
   */
 
+  var sortedTabs = _.sortBy(closedTabs, function(tab) {
+    return (-1) * tab.closedAt;
+  });
   var currentGroup = '';
-  for ( var i = 0; i < closedTabs.length; i++) {
-    var tab = closedTabs[i];
 
-    timeGroup = getGroup(tab.closedAt);
+  for ( var i = 0; i < sortedTabs.length; i++) {
+    var tab = sortedTabs[i];
+
+    var timeGroup = getGroup(tab.closedAt);
     if (timeGroup != currentGroup) {
       createGroupRow(timeGroup, $tbody);
       currentGroup = timeGroup;
