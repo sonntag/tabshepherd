@@ -67,7 +67,6 @@ TW.corralTab.init = function(context) {
   });
   $('.clearCorralLink').click(function() {
     TW.TabManager.closedTabs.clear();
-    TW.TabManager.updateClosedCount();
     TW.corralTab.init();
     return;
   });
@@ -163,7 +162,7 @@ TW.corralTab.buildTable = function(closedTabs) {
     //      a_title.href = urls[i];
     //    }
 
-    var $link = $('<a>').attr('target', '_blank').attr('data-tabid', tab.id).attr('href', tab.url);
+    var $link = $('<a>').attr('target', '_blank').data('tabid', tab.id).attr('href', tab.url);
     $link.text(tab.title.shorten(70));
 
     // Create a new tab when clicked in the background
@@ -175,7 +174,7 @@ TW.corralTab.buildTable = function(closedTabs) {
       return false;
     });
 
-    var $clear = $('<button>').attr('type', 'button').attr('class', 'close pull-right');
+    var $clear = $('<button>').attr('type', 'button').data('tabid', tab.id).attr('class', 'close pull-right');
     $clear.append('&times;').hide();
     $clear.click(function() {
       TW.TabManager.closedTabs.removeTab($(this).data('tabid'));
