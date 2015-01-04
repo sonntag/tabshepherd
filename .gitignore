@@ -1,5 +1,4 @@
-*.js~
-*.html~
-*.json~
+*~
 dist/*
 .DS_Store
+.idea
