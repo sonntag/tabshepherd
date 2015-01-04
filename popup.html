@@ -2,144 +2,149 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+    <meta charset="utf-8">
 
-  <script src="lib/jquery/js/jquery-1.7.2.min.js" type="text/javascript"></script>
-  <script src="lib/js/jquery.timeago.js" type="text/javascript"></script>
-  <script src="lib/bootstrap/js/bootstrap.min.js"></script>
-  <script src="lib/bootstrap/js/bootstrap-tab.js"></script>
+    <script src="lib/jquery/js/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <script src="lib/js/jquery.timeago.js" type="text/javascript"></script>
+    <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="lib/bootstrap/js/bootstrap-tab.js"></script>
 
-  <script src="lib/js/underscore.js"></script>
+    <script src="lib/js/underscore.js"></script>
 
-  <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.css" type="text/css"/>
-  <link rel="stylesheet" href="css/popup.css" type="text/css"/>
+    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.css" type="text/css"/>
+    <link rel="stylesheet" href="css/popup.css" type="text/css"/>
 
 
-  <script type="text/javascript" src="js/util.js"></script>
-  <!--
-    Popup related functionality.
-  -->
-  <script type="text/javascript" src="js/popup.js"></script>
+    <script type="text/javascript" src="js/util.js"></script>
+    <!--
+      Popup related functionality.
+    -->
+    <script type="text/javascript" src="js/popup.js"></script>
 </head>
 
 <body>
 
 <ul class="nav nav-tabs pull-left">
-  <li class="active"><a href="#tabCorral" target="#tabCorral" data-toggle="tab">Tab Corral</a></li>
-  <li><a href="#tabLock" target="#tabLock" data-toggle="tab">Tab Lock</a></li>
-  <li><a href="#tabWhitelist" target="#tabWhitelist" data-toggle="tab">Auto-Lock</a></li>
-  <li><a href="#tabOptions" target="#tabOptions" data-toggle="tab">Options</a></li>
+    <li class="active"><a href="#tabCorral" target="#tabCorral" data-toggle="tab">Tab Corral</a></li>
+    <li><a href="#tabLock" target="#tabLock" data-toggle="tab">Tab Lock</a></li>
+    <li><a href="#tabWhitelist" target="#tabWhitelist" data-toggle="tab">Auto-Lock</a></li>
+    <li><a href="#tabOptions" target="#tabOptions" data-toggle="tab">Options</a></li>
 </ul>
 
 <button id="pauseButton" class="btn btn-small pull-right" data-toggle="button">
-  <span class="unpaused-state"><i class="icon-pause"></i> pause</span>
-  <span class="paused-state"><i class="icon-play"></i> resume</span>
+    <span class="unpaused-state"><i class="icon-pause"></i> pause</span>
+    <span class="paused-state"><i class="icon-play"></i> resume</span>
 </button>
 
 <div class="tab-content">
-  <div class="tab-pane active" id="tabCorral">
-    <form class="form-search">
-      <input id="corral-search" type="text" class="search-query" placeholder="search"/>
-    </form>
-      <table id="corralTable" class="table table-condensed table-striped table-bordered table-white">
-        <thead>
-        <tr>
-          <th class="narrowColumn"></th>
-          <th>Title</th>
-          <th class="closedColumn">Closed</th>
-        </tr>
-        </thead>
-        <!--
-           ID is here for BC.  should really be fixed and jQuery based.
-        -->
-        <tbody>
-        </tbody>
-      </table>
-    <div id="autocloseMessage" class="alert alert-info">If tabs are closed automatically, they will be stored here</div>
-    <div class="clearCorralMessage alert alert-info"><a class="clearCorralLink" href="#">clear list</a></div>
-  </div>
-
-  <div class="tab-pane" id="tabLock">
-    <div class="alert alert-info">Click the checkbox to lock the tab (prevent it from auto-closing).</div>
-      <table id="activeTabs" class="table-striped table table-bordered table-white">
-        <thead>
-        <tr>
-          <th class="narrowColumn"><i class='icon-lock' /></th>
-          <th class="narrowColumn"></th>
-          <th>Tab</th>
-          <th class="countdownColumn">Expires in</th>
-        </tr>
-        </thead>
-        <!-- Class is a total kludge to keep popup=lock working -->
-        <tbody>
-
-        </tbody>
-      </table>
+    <div class="tab-pane active" id="tabCorral">
+        <form class="form-search">
+            <input id="corral-search" type="text" class="search-query" placeholder="search"/>
+        </form>
+        <table id="corralTable" class="table table-condensed table-striped table-bordered table-white">
+            <thead>
+            <tr>
+                <th class="narrowColumn"></th>
+                <th>Title</th>
+                <th class="closedColumn">Closed</th>
+            </tr>
+            </thead>
+            <!--
+               ID is here for BC.  should really be fixed and jQuery based.
+            -->
+            <tbody>
+            </tbody>
+        </table>
+        <div id="autocloseMessage" class="alert alert-info">If tabs are closed automatically, they will be stored here
+        </div>
+        <div class="clearCorralMessage alert alert-info"><a class="clearCorralLink" href="#">clear list</a></div>
     </div>
 
-  <div class="tab-pane" id="tabWhitelist">
-    <form class="well">
-        <label for="wl-add">Tabs with URLs "like":</label>
+    <div class="tab-pane" id="tabLock">
+        <div class="alert alert-info">Click the checkbox to lock the tab (prevent it from auto-closing).</div>
+        <table id="activeTabs" class="table-striped table table-bordered table-white">
+            <thead>
+            <tr>
+                <th class="narrowColumn"><i class='icon-lock'/></th>
+                <th class="narrowColumn"></th>
+                <th>Tab</th>
+                <th class="countdownColumn">Expires in</th>
+            </tr>
+            </thead>
+            <!-- Class is a total kludge to keep popup=lock working -->
+            <tbody>
 
-        <div class="input-append">
-            <input type="text" id="wl-add" />
-            <button class="btn" type="button" id="addToWL" disabled>add</button>
-        </div>
-
-        <table class="table" id="whitelist">
-          <thead>
-              <th>
-                URL pattern
-              </th>
-              <th></th>
-          </thead>
-          <tbody>
-          </tbody>
+            </tbody>
         </table>
+    </div>
+
+    <div class="tab-pane" id="tabWhitelist">
+        <form class="well">
+            <label for="wl-add">Tabs with URLs "like":</label>
+
+            <div class="input-append">
+                <input type="text" id="wl-add"/>
+                <button class="btn" type="button" id="addToWL" disabled>add</button>
+            </div>
+
+            <table class="table" id="whitelist">
+                <thead>
+                <th>
+                    URL pattern
+                </th>
+                <th></th>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         <span class="help-block">
           Example: <i>cnn</i> would match every page on cnn.com and any URL with cnn anywhere in URL.
         </span>
-    </form>
-  </div>
+        </form>
+    </div>
 
-  <div class="tab-pane" id="tabOptions">
-    <form class="well">
-      <fieldset>
-        <p>
-          <label for="minutesInactive">Close inactive tabs after:</label>
-          <input type="text" id="minutesInactive" class="span1" name="minutesInactive" /> minutes.
-        </p>
+    <div class="tab-pane" id="tabOptions">
+        <form class="well">
+            <fieldset>
+                <p>
+                    <label for="minutesInactive">Close inactive tabs after:</label>
+                    <input type="text" id="minutesInactive" class="span1" name="minutesInactive"/> minutes.
+                </p>
 
-        <p>
-          <label for="minTabs">Don't auto-close if I only have:</label>
-          <input type="text" id="minTabs" class="span1" name="minTabs" /> tabs open (not including pinned tabs).
-        </p>
+                <p>
+                    <label for="minTabs">Don't auto-close if I only have:</label>
+                    <input type="text" id="minTabs" class="span1" name="minTabs"/> tabs open (not including pinned
+                    tabs).
+                </p>
 
-        <p>
-          <label for="purgeClosedTabs" class="checkbox">Clear tab corral on quit
-            <input type="checkbox" id="purgeClosedTabs" class="span1" name="purgeClosedTabs" />
-            </label>
-        </p>
-        <p>
-          <label for="showBadgeCount" class="checkbox">Show # of closed tabs in URL bar
-            <input type="checkbox" id="showBadgeCount" class="span1" name="showBadgeCount" />
-            </label>
-        </p>
-        <p>
-          <label for="enableSync" class="checkbox">Sync options between Chrome browsers
-            <input type="checkbox" id="enableSync" class="span1" name="enableSync" />
-            </label>
-        </p>
-        <p>
-          <label for="removeCorralDupes" class="checkbox">Remove duplicate tabs from the corral
-            <input type="checkbox" id="removeCorralDupes" class="span1" name="removeCorralDupes" />
-            </label>
-        </p>
-      </fieldset>
-      <div id="status" class="alert alert-success">Saving...</div>
+                <p>
+                    <label for="purgeClosedTabs" class="checkbox">Clear tab corral on quit
+                        <input type="checkbox" id="purgeClosedTabs" class="span1" name="purgeClosedTabs"/>
+                    </label>
+                </p>
 
-    </form>
-  </div>
+                <p>
+                    <label for="showBadgeCount" class="checkbox">Show # of closed tabs in URL bar
+                        <input type="checkbox" id="showBadgeCount" class="span1" name="showBadgeCount"/>
+                    </label>
+                </p>
+
+                <p>
+                    <label for="enableSync" class="checkbox">Sync options between Chrome browsers
+                        <input type="checkbox" id="enableSync" class="span1" name="enableSync"/>
+                    </label>
+                </p>
+
+                <p>
+                    <label for="removeCorralDupes" class="checkbox">Remove duplicate tabs from the corral
+                        <input type="checkbox" id="removeCorralDupes" class="span1" name="removeCorralDupes"/>
+                    </label>
+                </p>
+            </fieldset>
+            <div id="status" class="alert alert-success">Saving...</div>
+
+        </form>
+    </div>
 </div>
 
 

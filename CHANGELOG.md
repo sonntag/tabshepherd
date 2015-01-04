@@ -1,3 +1,7 @@
+##PENDING
+
+* FIX: Uses the new rich notifications API instead of the deprecated webkit notifications API
+
 ##1.2.1
 
 * FIX: The close button now actually removes the correct tab from the corral.
