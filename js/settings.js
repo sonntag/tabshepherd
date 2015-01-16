@@ -129,7 +129,7 @@ TW.settings.setenableSync = function (value) {
  */
 TW.settings.setminutesInactive = function (value) {
     if (isNaN(parseInt(value)) || parseInt(value) < 0) {
-        throw Error("Minutes Inactive must be greater than 0");
+        throw Error("Minutes Inactive must be at least 0");
     }
     TW.settings.setValue('minutesInactive', value);
 
@@ -143,8 +143,8 @@ TW.settings.setminutesInactive = function (value) {
  * @see TW.settings.set
  */
 TW.settings.setminTabs = function (value) {
-    if (isNaN(parseInt(value)) || parseInt(value) < 0) {
-        throw Error("Minimum tabs must be a number that is at least 0");
+    if (isNaN(parseInt(value)) || parseInt(value) < 1) {
+        throw Error("Minimum tabs must be a number that is greater than 0");
     }
     var oldValue = TW.settings.get('minTabs');
     TW.settings.setValue('minTabs', value);
@@ -176,4 +176,14 @@ TW.settings.setshowBadgeCount = function (value) {
 TW.settings.setwhitelist = function (value) {
     TW.settings.setValue('whitelist', value);
     TW.TabManager.rescheduleAllTabs();
+};
+
+TW.settings.addWhitelist = function (value) {
+    TW.settings.cache.whitelist.push(value);
+    TW.settings.setwhitelist(TW.settings.cache.whitelist);
+};
+
+TW.settings.removeWhitelistByIndex = function (index) {
+    TW.settings.cache.whitelist.splice(index, 1);
+    TW.settings.setwhitelist(TW.settings.cache.whitelist);
 };

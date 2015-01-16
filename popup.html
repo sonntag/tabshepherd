@@ -4,6 +4,9 @@
 <head>
     <meta charset="utf-8">
 
+    <script src="lib/js/angular.min.js" type="text/javascript"></script>
+    <script src="lib/js/angular-timer.min.js" type="text/javascript"></script>
+    <script src="lib/js/ui-bootstrap.min.js" type="text/javascript"></script>
     <script src="lib/jquery/js/jquery-1.7.2.min.js" type="text/javascript"></script>
     <script src="lib/js/jquery.timeago.js" type="text/javascript"></script>
     <script src="lib/bootstrap/js/bootstrap.min.js"></script>
@@ -14,7 +17,6 @@
     <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.css" type="text/css"/>
     <link rel="stylesheet" href="css/popup.css" type="text/css"/>
 
-
     <script type="text/javascript" src="js/util.js"></script>
     <!--
       Popup related functionality.
@@ -22,7 +24,7 @@
     <script type="text/javascript" src="js/popup.js"></script>
 </head>
 
-<body>
+<body ng-app="popup">
 
 <ul class="nav nav-tabs pull-left">
     <li class="active"><a href="#tabCorral" target="#tabCorral" data-toggle="tab">Tab Corral</a></li>
@@ -31,17 +33,21 @@
     <li><a href="#tabOptions" target="#tabOptions" data-toggle="tab">Options</a></li>
 </ul>
 
-<button id="pauseButton" class="btn btn-small pull-right" data-toggle="button">
-    <span class="unpaused-state"><i class="icon-pause"></i> pause</span>
-    <span class="paused-state"><i class="icon-play"></i> resume</span>
+<button id="pauseButton" class="btn btn-small pull-right" ng-controller="PauseController as pauseCtrl"
+        btn-checkbox ng-model="pauseCtrl.paused" ng-class="{active: pauseCtrl.paused}">
+    <span ng-hide="pauseCtrl.paused"><i class="icon-pause"></i> pause</span>
+    <span ng-show="pauseCtrl.paused"><i class="icon-play"></i> resume</span>
 </button>
 
 <div class="tab-content">
-    <div class="tab-pane active" id="tabCorral">
+    <div class="tab-pane active" id="tabCorral" ng-controller="CorralController as corralCtrl">
+
         <form class="form-search">
-            <input id="corral-search" type="text" class="search-query" placeholder="search"/>
+            <input type="text" class="search-query" placeholder="search" ng-model="corralCtrl.searchTerm"/>
         </form>
+
         <table id="corralTable" class="table table-condensed table-striped table-bordered table-white">
+
             <thead>
             <tr>
                 <th class="narrowColumn"></th>
@@ -49,100 +55,174 @@
                 <th class="closedColumn">Closed</th>
             </tr>
             </thead>
-            <!--
-               ID is here for BC.  should really be fixed and jQuery based.
-            -->
-            <tbody>
+
+            <tbody ng-repeat="(label, tabGroup) in corralCtrl.closedTabs | filter:corralCtrl.searchTerm | groupTabs">
+
+            <tr class="info">
+                <td colspan="3">
+                    <span class="groupLabel">closed {{label}}</span>
+                    <button class="btn btn-mini btn-primary pull-right" ng-click="corralCtrl.restoreAll(tabGroup)">
+                        restore all
+                    </button>
+                </td>
+            </tr>
+
+            <tr class="corralRow" ng-repeat="tab in tabGroup">
+                <td><img class="favicon" src="{{tab.favIconUrl}}"/></td>
+                <td>
+                    <div class="titleData">
+                        <a href="{{tab.url}}" ng-click="corralCtrl.reopenTab(tab)">{{tab.title}}</a>
+                    </div>
+                    <button class="close pull-right" ng-click="corralCtrl.removeTab(tab)">
+                        &times;
+                    </button>
+                </td>
+                <td><span>{{tab | timeago}}</span></td>
+            </tr>
+
             </tbody>
+
         </table>
-        <div id="autocloseMessage" class="alert alert-info">If tabs are closed automatically, they will be stored here
+        <div class="alert alert-info" ng-show="corralCtrl.isEmpty()">
+            If tabs are closed automatically, they will be stored here
         </div>
-        <div class="clearCorralMessage alert alert-info"><a class="clearCorralLink" href="#">clear list</a></div>
+        <div class="alert alert-info" ng-hide="corralCtrl.isEmpty()">
+            <a href="#" ng-click="corralCtrl.clearList()">clear list</a>
+        </div>
     </div>
 
     <div class="tab-pane" id="tabLock">
+
         <div class="alert alert-info">Click the checkbox to lock the tab (prevent it from auto-closing).</div>
+
         <table id="activeTabs" class="table-striped table table-bordered table-white">
+
             <thead>
+
             <tr>
                 <th class="narrowColumn"><i class='icon-lock'/></th>
                 <th class="narrowColumn"></th>
                 <th>Tab</th>
                 <th class="countdownColumn">Expires in</th>
             </tr>
+
             </thead>
-            <!-- Class is a total kludge to keep popup=lock working -->
-            <tbody>
+
+            <tbody ng-controller="LockController as lockCtrl">
+
+            <tr ng-repeat="tab in lockCtrl.openTabs">
+
+                <td><input type="checkbox" ng-checked="lockCtrl.isChecked(tab)" ng-disabled="lockCtrl.isDisabled(tab)"
+                           ng-click="lockCtrl.toggleTabLock(tab)"/>
+                </td>
+
+                <td><img ng-if="tab.favIconUrl" class="favicon" src="{{tab.favIconUrl}}"/></td>
+
+                <td class="titleData">
+                    <span class="tabTitle">{{tab.title}}</span><br><span class="tabUrl">{{tab.url}}</span>
+                </td>
+
+                <td class="time-left">
+                    <span ng-if="lockCtrl.scheduledToClose(tab)">
+                        <timer interval="1000" countdown="lockCtrl.getTimeLeft(tab)" max-time-unit="'minute'">
+                            {{minutes}}:{{sseconds}}
+                        </timer>
+                    </span>
+                    <span ng-if="lockCtrl.paused">paused</span>
+                </td>
+
+            </tr>
 
             </tbody>
+
         </table>
     </div>
 
-    <div class="tab-pane" id="tabWhitelist">
-        <form class="well">
+    <div class="tab-pane" id="tabWhitelist" ng-controller="WhitelistController as whitelistCtrl">
+
+        <form name="whitelistForm" novalidate class="well">
             <label for="wl-add">Tabs with URLs "like":</label>
 
             <div class="input-append">
-                <input type="text" id="wl-add"/>
-                <button class="btn" type="button" id="addToWL" disabled>add</button>
+                <input type="text" id="wl-add" ng-model="whitelistCtrl.newWhitelistValue" required/>
+                <button class="btn" ng-click="whitelistCtrl.addNewWhitelistValue()"
+                        ng-disabled="whitelistForm.$invalid">add
+                </button>
             </div>
 
             <table class="table" id="whitelist">
+
                 <thead>
-                <th>
-                    URL pattern
-                </th>
-                <th></th>
+                <tr>
+                    <th>URL pattern</th>
+                    <th></th>
+                </tr>
                 </thead>
+
                 <tbody>
+
+                <tr ng-repeat="wl in whitelistCtrl.whitelist track by $index">
+                    <td>{{wl}}</td>
+                    <td><a href="#" ng-click="whitelistCtrl.removeWhitelist($index)">Remove</a></td>
+                </tr>
+
                 </tbody>
+
             </table>
-        <span class="help-block">
-          Example: <i>cnn</i> would match every page on cnn.com and any URL with cnn anywhere in URL.
-        </span>
+
+            <span class="help-block">
+              Example: <i>cnn</i> would match every page on cnn.com and any URL with cnn anywhere in URL.
+            </span>
+
         </form>
     </div>
 
-    <div class="tab-pane" id="tabOptions">
-        <form class="well">
+    <div class="tab-pane" id="tabOptions" ng-controller="SettingsController as settingsCtrl">
+        <form novalidate class="well">
             <fieldset>
                 <p>
                     <label for="minutesInactive">Close inactive tabs after:</label>
-                    <input type="text" id="minutesInactive" class="span1" name="minutesInactive"/> minutes.
+                    <input type="text" id="minutesInactive" class="span1" ng-model="settingsCtrl.minutesInactive"
+                           ng-model-options="{ debounce: 500 }" integer min="0" required
+                           ng-blur="settingsCtrl.resetMinutesInactive()"/>
+                    minutes.
                 </p>
 
                 <p>
                     <label for="minTabs">Don't auto-close if I only have:</label>
-                    <input type="text" id="minTabs" class="span1" name="minTabs"/> tabs open (not including pinned
-                    tabs).
+                    <input type="text" id="minTabs" class="span1" ng-model="settingsCtrl.minTabs"
+                           ng-model-options="{ debounce: 500 }" integer min="1" required
+                           ng-blur="settingsCtrl.resetMinTabs()"/>
+                    tabs open (not including pinned tabs).
                 </p>
 
                 <p>
                     <label for="purgeClosedTabs" class="checkbox">Clear tab corral on quit
-                        <input type="checkbox" id="purgeClosedTabs" class="span1" name="purgeClosedTabs"/>
+                        <input type="checkbox" id="purgeClosedTabs" class="span1"
+                               ng-model="settingsCtrl.purgeClosedTabs"/>
                     </label>
                 </p>
 
                 <p>
                     <label for="showBadgeCount" class="checkbox">Show # of closed tabs in URL bar
-                        <input type="checkbox" id="showBadgeCount" class="span1" name="showBadgeCount"/>
+                        <input type="checkbox" id="showBadgeCount" class="span1"
+                               ng-model="settingsCtrl.showBadgeCount"/>
                     </label>
                 </p>
 
                 <p>
                     <label for="enableSync" class="checkbox">Sync options between Chrome browsers
-                        <input type="checkbox" id="enableSync" class="span1" name="enableSync"/>
+                        <input type="checkbox" id="enableSync" class="span1" ng-model="settingsCtrl.enableSync"/>
                     </label>
                 </p>
 
                 <p>
                     <label for="removeCorralDupes" class="checkbox">Remove duplicate tabs from the corral
-                        <input type="checkbox" id="removeCorralDupes" class="span1" name="removeCorralDupes"/>
+                        <input type="checkbox" id="removeCorralDupes" class="span1"
+                               ng-model="settingsCtrl.removeCorralDupes"/>
                     </label>
                 </p>
             </fieldset>
-            <div id="status" class="alert alert-success">Saving...</div>
-
         </form>
     </div>
 </div>

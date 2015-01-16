@@ -1,61 +1,92 @@
 body {
-  width: 700px;
-  overflow-x: hidden;
-  background-image: url('/img/cream_dust.png');
+    width: 700px;
+    overflow-x: hidden;
+    background-image: url('/img/cream_dust.png');
 }
 
 .favicon {
-  width: 16px;
-  height: 16px;
-  padding: 0px;
-  margin: 0px;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    margin: 0;
 }
 
 .table td {
-  font-size: 11px;
+    font-size: 11px;
 }
 
 .table-white {
-  background-color: white;
+    background-color: white;
 }
 
 #status {
-  margin-bottom: 2px;
-  visibility: hidden;
+    margin-bottom: 2px;
+    visibility: hidden;
 }
 
 legend {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .narrowColumn {
-  width: 20px;
+    width: 20px;
 }
 
-#tabLock table {
-  table-layout: fixed;
+#corralTable {
+    table-layout: fixed;
+}  
+
+#activeTabs {
+    table-layout: fixed;
 }
 
 .countdownColumn {
-  width: 80px;
+    width: 80px;
 }
 
 .closedColumn {
-  width: 200px;
+    width: 200px;
 }
 
 #tabLock .tabTitle {
-  font-weight: bolder;
+    font-weight: bolder;
+}
+
+.titleData {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.corralRow .titleData {
+    float: left;
+    width: 100%;
+}
+
+.corralRow:hover .titleData {
+    width: 95%;
+}
+
+.groupLabel {
+    padding-left: 20px;
+}
+
+.close {
+    display: none;
+}
+
+.corralRow:hover .close {
+    display: inline;
 }
 
 #pauseButton {
-  margin-top: 10px;
-  margin-right: 15px;
-  vertical-align: top;
+    margin-top: 10px;
+    margin-right: 15px;
+    vertical-align: top;
 }
 
 .tab-content {
-  clear: both;
-  padding-left: 10px;
-  padding-right: 10px;
+    clear: both;
+    padding-left: 10px;
+    padding-right: 10px;
 }

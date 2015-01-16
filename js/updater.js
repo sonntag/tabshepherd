@@ -10,8 +10,7 @@ TW.Updater.firstInstall = function () {
         iconUrl: 'img/icon48.png',
         title: 'Tab Shepherd is installed',
         message: 'Tap Shepherd is now auto-closing tabs after ' + TW.settings.get('minutesInactive') + ' minutes.',
-        contextMessage: 'To change this setting, click on the new icon on your URL bar.',
-        isClickable: false
+        contextMessage: 'To change this setting, click on the new icon on your URL bar.'
     }, function() {});
 };
 

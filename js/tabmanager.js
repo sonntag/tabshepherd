@@ -211,8 +211,10 @@ TW.TabManager.setPaused = function (pause) {
 
     if (pause) {
         TW.TabManager.unscheduleAllTabs();
+        chrome.browserAction.setIcon({'path': 'img/icon-paused.png'});
     } else {
         TW.TabManager.scheduleNextClose();
+        chrome.browserAction.setIcon({'path': 'img/icon.png'});
     }
 };
 
@@ -315,6 +317,14 @@ TW.TabManager.unlockTab = function (tabId) {
     TW.TabManager.openTabs[tabId].locked = false;
     TW.TabManager.unscheduleLatestClose();
     TW.TabManager.scheduleNextClose();
+};
+
+TW.TabManager.toggleTabLock = function (tabId) {
+    if (TW.TabManager.isLocked(tabId)) {
+        TW.TabManager.unlockTab(tabId)
+    } else {
+        TW.TabManager.lockTab(tabId)
+    }
 };
 
 /** Returns the lock status of the given tabId. */
