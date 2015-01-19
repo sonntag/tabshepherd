@@ -7,8 +7,7 @@ var TW = TW || {};
 TW.TabManager = {
     openTabs: {},
     closedTabs: {tabs: []},
-    filters: {},
-    paused: false
+    filters: {}
 };
 
 /* Gets the latest access time of the given tab ID. */
@@ -122,7 +121,7 @@ TW.TabManager.wrangleAndClose = function (tabId) {
  */
 TW.TabManager.scheduleNextClose = function () {
 
-    if (TW.TabManager.paused) {
+    if (TW.settings.paused) {
         return;
     }
 
@@ -203,19 +202,6 @@ TW.TabManager.unscheduleAllTabs = function () {
 TW.TabManager.unscheduleTab = function (tab) {
     clearTimeout(tab.scheduledClose);
     delete tab['scheduledClose'];
-};
-
-/** Handles pausing and resuming the closing of tabs. */
-TW.TabManager.setPaused = function (pause) {
-    TW.TabManager.paused = pause;
-
-    if (pause) {
-        TW.TabManager.unscheduleAllTabs();
-        chrome.browserAction.setIcon({'path': 'img/icon-paused.png'});
-    } else {
-        TW.TabManager.scheduleNextClose();
-        chrome.browserAction.setIcon({'path': 'img/icon.png'});
-    }
 };
 
 TW.TabManager.searchTabs = function (cb, filters) {

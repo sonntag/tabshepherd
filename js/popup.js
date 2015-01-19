@@ -43,10 +43,10 @@ Object.defineProperty(PauseController.prototype, 'paused', {
     enumerable: true,
     configurable: false,
     get: function () {
-        return this.TW.TabManager.paused
+        return this.TW.settings.paused
     },
     set: function (val) {
-        this.TW.TabManager.setPaused(val)
+        this.TW.settings.set('paused', val)
     }
 });
 
@@ -128,7 +128,7 @@ Object.defineProperty(LockController.prototype, 'paused', {
     enumerable: true,
     configurable: false,
     get: function() {
-        return this.TW.TabManager.paused
+        return this.TW.settings.paused
     }
 });
 

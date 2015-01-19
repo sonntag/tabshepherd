@@ -10,6 +10,7 @@ var TW = TW || {};
  */
 TW.settings = {
     enableSync: true, // Enables reading settings from sync
+    paused: false,
     defaults: {
         minutesInactive: 20, // How many minutes before we consider a tab "stale" and ready to close.
         minTabs: 5, // Stop acting if there are only minTabs tabs open.
@@ -23,9 +24,10 @@ TW.settings = {
 
 // Gets all settings from sync and stores them locally.
 TW.settings.init = function () {
-    chrome.storage.local.get({enableSync: TW.settings.enableSync}, function (sync) {
+    chrome.storage.local.get({enableSync: TW.settings.enableSync, paused: TW.settings.paused}, function (sync) {
 
         TW.settings.enableSync = sync.enableSync;
+        TW.settings.setpaused(sync.paused);
 
         if (TW.settings.enableSync) {
             chrome.storage.sync.get(TW.settings.defaults, function (items) {
@@ -120,6 +122,24 @@ TW.settings.setenableSync = function (value) {
             chrome.storage.local.set(TW.settings.cache);
         }
     });
+};
+
+TW.settings.setpaused = function (value) {
+    if (TW.settings.paused == value) {
+        return
+    }
+
+    TW.settings.paused = value;
+
+    chrome.storage.local.set({paused: value}, function () {
+        if (value) {
+            TW.TabManager.unscheduleAllTabs();
+            chrome.browserAction.setIcon({'path': 'img/icon-paused.png'});
+        } else {
+            TW.TabManager.scheduleNextClose();
+            chrome.browserAction.setIcon({'path': 'img/icon.png'});
+        }
+    })
 };
 
 /**
