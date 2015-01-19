@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.css" type="text/css"/>
     <link rel="stylesheet" href="css/popup.css" type="text/css"/>
 
-    <script type="text/javascript" src="js/util.js"></script>
     <!--
       Popup related functionality.
     -->
@@ -67,7 +66,7 @@
                 </td>
             </tr>
 
-            <tr class="corralRow" ng-repeat="tab in tabGroup">
+            <tr class="corralRow" ng-repeat="tab in tabGroup track by $index">
                 <td><img class="favicon" src="{{tab.favIconUrl}}"/></td>
                 <td>
                     <div class="titleData">

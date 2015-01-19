@@ -1,29 +1,24 @@
-/**
- * @file: API functions for creating and updating the context menu.
- */
+define(['tabmanager', 'settings'], function (tabmanager, settings) {
 
-// Name space
-var TW = TW || {};
+    var contextmenu = {};
+    var lockTabId;
+    var lockDomainId;
 
-/**
- * Creates and updates context menus.
- */
-TW.contextMenuHandler = {
-    lockActionId: null,
-    createContextMenus: function () {
+    contextmenu.createContextMenus = function () {
+
         var lockTabAction = function (onClickData, selectedTab) {
-            TW.TabManager.lockTab(selectedTab.id);
+            tabmanager.lockTab(selectedTab.id);
         };
 
         var lockDomainAction = function (onClickData, selectedTab) {
-            var whitelist = TW.settings.get('whitelist');
-            var domain = TW.util.getDomain(selectedTab.url);
+            var whitelist = settings.get('whitelist');
+            var domain = getDomain(selectedTab.url);
             whitelist.push(domain);
-            TW.settings.set('whitelist', whitelist);
+            settings.set('whitelist', whitelist);
         };
 
         var corralTabAction = function (onClickData, selectedTab) {
-            TW.TabManager.wrangleAndClose(selectedTab.id);
+            tabmanager.wrangleAndClose(selectedTab.id);
         };
 
         var lockTab = {
@@ -38,25 +33,28 @@ TW.contextMenuHandler = {
             'onclick': lockDomainAction
         };
 
-        var corralTab = {
+        var closeTab = {
             'type': 'normal',
             'title': "Close tab and save URL immediately",
             'onclick': corralTabAction
         };
 
-        this.lockTabId = chrome.contextMenus.create(lockTab);
-        this.lockDomainId = chrome.contextMenus.create(lockDomain);
-        chrome.contextMenus.create(corralTab);
-    },
+        lockTabId = chrome.contextMenus.create(lockTab);
+        lockDomainId = chrome.contextMenus.create(lockDomain);
+        chrome.contextMenus.create(closeTab);
+    };
 
-    updateContextMenus: function (tabId) {
-        var self = this;
-        // Little bit of a kludge, would be nice to be DRY here but this was simpler.
-        // Sets the title again for each page.
+    contextmenu.updateContextMenus = function (tabId) {
         chrome.tabs.get(tabId, function (tab) {
-            var currentDomain = TW.util.getDomain(tab.url);
-            chrome.contextMenus.update(self.lockDomainId, {'title': 'Never close anything on ' + currentDomain});
-            chrome.contextMenus.update(self.lockTabId, {'checked': tab.locked});
-        });
-    }
-};
+            var currentDomain = getDomain(tab.url);
+            chrome.contextMenus.update(lockTabId, { checked: tab.locked });
+            chrome.contextMenus.update(lockDomainId, { title: 'Never close anything on ' + currentDomain });
+        })
+    };
+
+    var getDomain = function (url) {
+        return url.match(/[^:]+:\/\/([^\/]+)\//)[1];
+    };
+
+    return contextmenu;
+});

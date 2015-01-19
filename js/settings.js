@@ -1,209 +1,165 @@
-/**
- * @file: API functions for accessing and modifying settings
- */
+define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager) {
 
-// Name space
-var TW = TW || {};
+    var settings = {};
 
-/**
- * @type {Object}
- */
-TW.settings = {
-    enableSync: true, // Enables reading settings from sync
-    paused: false,
-    defaults: {
+    settings.paused = false;
+    settings.enableSync = true;
+
+    var defaults = {
         minutesInactive: 20, // How many minutes before we consider a tab "stale" and ready to close.
         minTabs: 5, // Stop acting if there are only minTabs tabs open.
         purgeClosedTabs: false, // Save closed tabs in between browser sessions.
         showBadgeCount: true, // Save closed tabs in between browser sessions.
         removeCorralDupes: true, // Remove duplicate tabs from the corral by comparing URL
         whitelist: [] // An array of patterns to check against.  If a URL matches a pattern, it is never locked.
-    },
-    cache: {}
-};
+    };
 
-// Gets all settings from sync and stores them locally.
-TW.settings.init = function () {
-    chrome.storage.local.get({enableSync: TW.settings.enableSync, paused: TW.settings.paused}, function (sync) {
+    var cache = {};
 
-        TW.settings.enableSync = sync.enableSync;
-        TW.settings.setpaused(sync.paused);
+    // Gets all settings from sync and stores them locally.
+    settings.init = function () {
+        chrome.storage.local.get({enableSync: settings.enableSync, paused: settings.paused}, function (sync) {
 
-        if (TW.settings.enableSync) {
-            chrome.storage.sync.get(TW.settings.defaults, function (items) {
-                _.extend(TW.settings.cache, items);
-            });
-        } else {
-            chrome.storage.local.get(TW.settings.defaults, function (items) {
-                _.extend(TW.settings.cache, items);
-            });
-        }
-    });
-};
+            settings.enableSync = sync.enableSync;
+            settings.setpaused(sync.paused);
 
-// Whenever settings change in sync, copy them to cache
-TW.settings.copySyncChanges = function (changes, area) {
-    if (area == 'sync' && TW.settings.enableSync) {
-        var changeList = _.map(changes, function (change, key) {
-            return [key, change.newValue];
+            if (settings.enableSync) {
+                chrome.storage.sync.get(defaults, function (items) {
+                    _.extend(cache, items);
+                });
+            } else {
+                chrome.storage.local.get(defaults, function (items) {
+                    _.extend(cache, items);
+                });
+            }
         });
-        var changeObject = _.object(changeList);
-        _.extend(TW.settings.cache, changeObject);
-    }
-};
+    };
 
-/**
- * Sets a value in localStorage.  Can also call a setter.
- *
- * If the value is a struct (object or array) it is JSONified.
- *
- * @param key
- *  Settings keyword string.
- * @param value
- * @return {*}
- */
-TW.settings.set = function (key, value) {
-    // Magic setter functions are set{fieldname}
-    if (typeof this["set" + key] == 'function') {
-        return this["set" + key](value);
-    }
-    TW.settings.setValue(key, value);
-};
-
-TW.settings.setValue = function (key, value) {
-    var items = {};
-    items[key] = value;
-    TW.settings.cache[key] = value;
-
-    // Set the appropriate storage location
-    if (TW.settings.enableSync) {
-        chrome.storage.sync.set(items);
-    } else {
-        chrome.storage.local.set(items);
-    }
-};
-
-/**
- * Either calls a getter function or retunrs directly from storage.
- * @param key
- *  Callback function after value is received.
- * @return {*}
- */
-TW.settings.get = function (key) {
-    if (typeof this[key] == 'function') {
-        return this[key]();
-    }
-
-    return this.cache[key];
-};
-
-/**
- * Returns the number of milliseconds that tabs should stay open for without being used.
- *
- * @return {Number}
- */
-TW.settings.stayOpen = function () {
-    return parseInt(this.get('minutesInactive')) * 60000;
-};
-
-/* Sets the enableSync attribute, which is only stored locally. */
-TW.settings.setenableSync = function (value) {
-    if (TW.settings.enableSync == value) {
-        return;
-    }
-
-    TW.settings.enableSync = value;
-
-    chrome.storage.local.set({enableSync: value}, function () {
-
-        if (value) {
-            TW.settings.init();
-        } else {
-            chrome.storage.local.set(TW.settings.cache);
+    // Whenever settings change in sync, copy them to cache
+    settings.copySyncChanges = function (changes, area) {
+        if (area == 'sync' && settings.enableSync) {
+            var changeList = _.map(changes, function (change, key) {
+                return [key, change.newValue];
+            });
+            var changeObject = _.object(changeList);
+            _.extend(cache, changeObject);
         }
-    });
-};
+    };
 
-TW.settings.setpaused = function (value) {
-    if (TW.settings.paused == value) {
-        return
-    }
-
-    TW.settings.paused = value;
-
-    chrome.storage.local.set({paused: value}, function () {
-        if (value) {
-            TW.TabManager.unscheduleAllTabs();
-            chrome.browserAction.setIcon({'path': 'img/icon-paused.png'});
-        } else {
-            TW.TabManager.scheduleNextClose();
-            chrome.browserAction.setIcon({'path': 'img/icon.png'});
+    settings.set = function (key, value) {
+        if (typeof settings['set' + key] == 'function') {
+            return settings['set' + key](value);
         }
-    })
-};
+        setValue(key, value)
+    };
 
-/**
- *
- * @param value
- * @see TW.settings.set
- */
-TW.settings.setminutesInactive = function (value) {
-    if (isNaN(parseInt(value)) || parseInt(value) < 0) {
-        throw Error("Minutes Inactive must be at least 0");
-    }
-    TW.settings.setValue('minutesInactive', value);
+    var setValue = function (key, value) {
+        var items = {};
+        items[key] = value;
+        cache[key] = value;
 
-    // Reschedule all schedule tabs since we changed the setting
-    TW.TabManager.rescheduleAllTabs();
-};
+        // Set the appropriate storage location
+        if (settings.enableSync) {
+            chrome.storage.sync.set(items);
+        } else {
+            chrome.storage.local.set(items);
+        }
+    };
 
-/**
- *
- * @param value
- * @see TW.settings.set
- */
-TW.settings.setminTabs = function (value) {
-    if (isNaN(parseInt(value)) || parseInt(value) < 1) {
-        throw Error("Minimum tabs must be a number that is greater than 0");
-    }
-    var oldValue = TW.settings.get('minTabs');
-    TW.settings.setValue('minTabs', value);
+    settings.get = function (key) {
+        if (typeof settings[key] == 'function') {
+            return settings[key]();
+        }
+        return cache[key];
+    };
 
-    /* Make sure the tab scheduling is correct. */
-    if (parseInt(value) > oldValue) {
-        TW.TabManager.unscheduleAllTabs();
-    }
-    TW.TabManager.scheduleNextClose();
-};
+    settings.stayOpen = function () {
+        return parseInt(settings.get('minutesInactive')) * 60 * 1000;
+    };
 
-/**
- *
- * @param value
- * @see TW.settings.set
- */
-TW.settings.setshowBadgeCount = function (value) {
-    if (value == false) {
-        // Clear out the current badge setting
-        chrome.browserAction.setBadgeText({text: ""});
-    }
-    TW.settings.setValue('showBadgeCount', value);
-};
+    /* Sets the enableSync attribute, which is only stored locally. */
+    settings.setenableSync = function (value) {
+        if (settings.enableSync == value) {
+            return;
+        }
 
-/**
- * @param value
- * @see TW.settings.set
- */
-TW.settings.setwhitelist = function (value) {
-    TW.settings.setValue('whitelist', value);
-    TW.TabManager.rescheduleAllTabs();
-};
+        settings.enableSync = value;
 
-TW.settings.addWhitelist = function (value) {
-    TW.settings.cache.whitelist.push(value);
-    TW.settings.setwhitelist(TW.settings.cache.whitelist);
-};
+        chrome.storage.local.set({enableSync: value}, function () {
 
-TW.settings.removeWhitelistByIndex = function (index) {
-    TW.settings.cache.whitelist.splice(index, 1);
-    TW.settings.setwhitelist(TW.settings.cache.whitelist);
-};
+            if (value) {
+                settings.init();
+            } else {
+                chrome.storage.local.set(cache);
+            }
+        });
+    };
+
+    settings.setpaused = function (value) {
+        if (settings.paused == value) {
+            return
+        }
+
+        settings.paused = value;
+
+        chrome.storage.local.set({paused: value}, function () {
+            if (value) {
+                require('tabmanager').unscheduleAllTabs();
+                chrome.browserAction.setIcon({'path': 'img/icon-paused.png'});
+            } else {
+                require('tabmanager').scheduleNextClose();
+                chrome.browserAction.setIcon({'path': 'img/icon.png'});
+            }
+        })
+    };
+
+    settings.setminutesInactive = function (value) {
+        if (isNaN(parseInt(value)) || parseInt(value) < 0) {
+            throw Error("Minutes Inactive must be at least 0");
+        }
+
+        setValue('minutesInactive', value);
+
+        // Reschedule all schedule tabs since we changed the setting
+        require('tabmanager').rescheduleAllTabs();
+    };
+
+    settings.setminTabs = function (value) {
+        if (isNaN(parseInt(value)) || parseInt(value) < 1) {
+            throw Error("Minimum tabs must be a number that is greater than 0");
+        }
+        var oldValue = settings.get('minTabs');
+        setValue('minTabs', value);
+
+        /* Make sure the tab scheduling is correct. */
+        if (parseInt(value) > oldValue) {
+            require('tabmanager').unscheduleAllTabs();
+        }
+        require('tabmanager').scheduleNextClose();
+    };
+
+    settings.setshowBadgeCount = function (value) {
+        if (value == false) {
+            // Clear out the current badge setting
+            chrome.browserAction.setBadgeText({text: ""});
+        }
+        setValue('showBadgeCount', value);
+    };
+
+    settings.setwhitelist = function (value) {
+        setValue('whitelist', value);
+        require('tabmanager').rescheduleAllTabs();
+    };
+
+    settings.addWhitelist = function (value) {
+        cache.whitelist.push(value);
+        settings.setwhitelist(cache.whitelist);
+    };
+
+    settings.removeWhitelistByIndex = function (index) {
+        cache.whitelist.splice(index, 1);
+        settings.setwhitelist(cache.whitelist);
+    };
+
+    return settings;
+});

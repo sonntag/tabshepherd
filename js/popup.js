@@ -103,7 +103,7 @@ var LockController = function ($q, TW) {
 
     self.getTimeLeft = function (tab) {
         var cutOff = new Date().getTime() - TW.settings.get('stayOpen');
-        var lastModified = TW.TabManager.openTabs[tab.id].time;
+        var lastModified = TW.TabManager.getTime(tab.id);
         return (lastModified - cutOff) / 1000;
     };
 

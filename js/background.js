@@ -1,62 +1,74 @@
-/**
- * @file: Initializes Tab Shepherd on startup.
- */
+require.config({
+    baseUrl: 'js',
+    paths: {
+        underscore: '../lib/js/underscore'
+    },
+    shim: {
+        underscore: {
+            exports: '_'
+        }
+    }
+});
 
-function startup() {
+// This is used to expose the background page to the popup
+var TW = TW || {};
+
+require(['underscore', 'tabmanager', 'settings', 'contextmenu', 'updater'],
+    function (_, tabmanager, settings, contextmenu, updater) {
+
+    TW.TabManager = tabmanager;
+    TW.settings = settings;
 
     chrome.runtime.onInstalled.addListener(function (details) {
         if (details.reason == 'install') {
-            TW.Updater.firstInstall();
+            updater.firstInstall();
         } else if (details.reason == 'update') {
-            TW.Updater.runUpdates(details.previousVersion, chrome.app.getDetails().version);
+            updater.runUpdates(details.previousVersion, chrome.app.getDetails().version);
         }
     });
 
-    TW.settings.init();
-    TW.TabManager.closedTabs.init();
+    settings.init();
+    tabmanager.closedTabs.init();
 
     // Move this to a function somewhere so we can restart the process.
-    chrome.tabs.query({windowType: 'normal', pinned: false}, TW.TabManager.initTabs);
-    chrome.tabs.onCreated.addListener(TW.TabManager.registerNewTab);
+    chrome.tabs.query({windowType: 'normal', pinned: false}, tabmanager.initTabs);
+    chrome.tabs.onCreated.addListener(tabmanager.registerNewTab);
 
     // Handles pinning and unpinning a tab
     chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         if (_.has(changeInfo, 'pinned')) {
             if (changeInfo.pinned) {
-                clearTimeout(TW.TabManager.openTabs[tabId].scheduledClose);
-                TW.TabManager.tabPinned(tabId);
+                clearTimeout(tabmanager.openTabs[tabId].scheduledClose);
+                tabmanager.tabPinned(tabId);
             } else {
-                TW.TabManager.registerNewTab(tab);
+                tabmanager.registerNewTab(tab);
             }
         }
     });
 
     // Handler for removing duplicate tabs from the corral
-    chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-        if (TW.settings.get('removeCorralDupes') && _.has(changeInfo, 'url')) {
-            TW.TabManager.closedTabs.removeDuplicate(changeInfo.url);
+    chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
+        if (settings.get('removeCorralDupes') && _.has(changeInfo, 'url')) {
+            tabmanager.closedTabs.removeDuplicate(changeInfo.url);
         }
     });
 
-    chrome.tabs.onRemoved.addListener(TW.TabManager.removeTab);
+    chrome.tabs.onRemoved.addListener(tabmanager.removeTab);
 
     chrome.tabs.onActivated.addListener(function (tabInfo) {
-        TW.contextMenuHandler.updateContextMenus(tabInfo.tabId);
-        TW.TabManager.updateLastAccessed(tabInfo.tabId)
+        contextmenu.updateContextMenus(tabInfo.tabId);
+        tabmanager.updateLastAccessed(tabInfo.tabId)
     });
 
-    chrome.tabs.onReplaced.addListener(TW.TabManager.replaceTab);
+    chrome.tabs.onReplaced.addListener(tabmanager.replaceTab);
 
-    chrome.storage.onChanged.addListener(TW.settings.copySyncChanges);
+    chrome.storage.onChanged.addListener(settings.copySyncChanges);
 
     chrome.commands.onCommand.addListener(function (command) {
         if (command == 'reopen-corral-tab') {
-            TW.TabManager.closedTabs.openLatestTab();
+            tabmanager.closedTabs.openLatestTab();
         }
     });
 
-    // Create the "lock tab" context menu:
-    TW.contextMenuHandler.createContextMenus();
-}
-
-window.onload = startup;
+    contextmenu.createContextMenus();
+});
