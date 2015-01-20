@@ -7,7 +7,7 @@ define(['tabmanager', 'settings'], function (tabmanager, settings) {
     contextmenu.createContextMenus = function () {
 
         var lockTabAction = function (onClickData, selectedTab) {
-            tabmanager.lockTab(selectedTab.id);
+            tabmanager.toggleTabLock(selectedTab.id);
         };
 
         var lockDomainAction = function (onClickData, selectedTab) {

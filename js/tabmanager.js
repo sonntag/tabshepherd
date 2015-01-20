@@ -20,10 +20,11 @@ define(['underscore', 'settings'], function (_, settings) {
                 if (window.type == 'normal') {
                     tabmanager.openTabs[tab.id] = {
                         time: new Date(),
-                        locked: false
+                        locked: false,
+                        windowId: tab.windowId
                     };
 
-                    tabmanager.scheduleNextClose();
+                    tabmanager.scheduleNextClose(tab.windowId);
                 }
             });
         }
@@ -36,8 +37,8 @@ define(['underscore', 'settings'], function (_, settings) {
 
             // If this tab was scheduled to close, we must cancel the close and schedule a new one
             if (_.has(tab, 'scheduledClose')) {
-                tabmanager.unscheduleTab(tab);
-                tabmanager.scheduleNextClose();
+                unscheduleTab(tab);
+                tabmanager.scheduleNextClose(tab.windowId);
             }
         }
     };
@@ -53,11 +54,11 @@ define(['underscore', 'settings'], function (_, settings) {
         if (_.has(tab, 'scheduledClose')) {
             // If this case is true, then a scheduled tabs was closed (doesn't matter if it was
             // by the user or by a close event), so attmpt to unschedule it.
-            tabmanager.unscheduleTab(tab);
+            unscheduleTab(tab);
         } else {
             // Otherwise an unscheduled tab was definitely closed by the user, so we may have to
             // unschedule another tab.
-            tabmanager.unscheduleLatestClose();
+            unscheduleLatestClose(tab.windowId);
         }
 
         delete tabmanager.openTabs[tabId];
@@ -71,8 +72,8 @@ define(['underscore', 'settings'], function (_, settings) {
 
             // if the replaced tab was schedule to close then we must reschedule it.
             if (_.has(tab, 'scheduledClose')) {
-                tabmanager.unscheduleTab(tab);
-                tabmanager.scheduleToClose({id: addedTabId});
+                unscheduleTab(tab);
+                scheduleToClose({id: addedTabId});
             }
         }
     };
@@ -85,24 +86,39 @@ define(['underscore', 'settings'], function (_, settings) {
                 tabmanager.closedTabs.tabs.unshift(tabToSave);
 
                 chrome.storage.local.set({savedTabs: tabmanager.closedTabs.tabs});
-                tabmanager.updateClosedCount();
+                updateClosedCount();
             });
         });
     };
 
-    tabmanager.scheduleNextClose = function () {
+    tabmanager.scheduleNextClose = function (windowId) {
 
         if (settings.paused) {
             return;
         }
 
-        chrome.tabs.query({pinned: false, windowType: 'normal'}, function (tabs) {
-            var tabsToSchedule = tabmanager.getTabsToSchedule(tabs);
-            _.map(tabsToSchedule, tabmanager.scheduleToClose);
-        });
+        if (settings.get('countPerWindow')) {
+            if (arguments.length == 1) {
+                chrome.tabs.query({pinned: false, windowType: 'normal', windowId: windowId}, function (tabs) {
+                    var tabsToSchedule = getTabsToSchedule(tabs);
+                    _.map(tabsToSchedule, scheduleToClose);
+                })
+            } else {
+                chrome.tabs.query({pinned: false, windowType: 'normal'}, function (tabs) {
+                    var windowGroups = _.values(_.groupBy(tabs, function (tab) { return tab.windowId }));
+                    var tabsToSchedule = _.flatten(_.map(windowGroups, getTabsToSchedule));
+                    _.map(tabsToSchedule, scheduleToClose);
+                })
+            }
+        } else {
+            chrome.tabs.query({pinned: false, windowType: 'normal'}, function (tabs) {
+                var tabsToSchedule = getTabsToSchedule(tabs);
+                _.map(tabsToSchedule, scheduleToClose);
+            });
+        }
     };
 
-    tabmanager.getTabsToSchedule = function (tabs) {
+    var getTabsToSchedule = function (tabs) {
 
         var minTabs = settings.get('minTabs');
 
@@ -125,7 +141,7 @@ define(['underscore', 'settings'], function (_, settings) {
         }
     };
 
-    tabmanager.scheduleToClose = function (tab) {
+    var scheduleToClose = function (tab) {
         if (!_.has(tabmanager.openTabs[tab.id], 'scheduledClose')) {
             var timeout = tabmanager.getTime(tab.id).getTime() + settings.get('stayOpen') - new Date();
             tabmanager.openTabs[tab.id].scheduledClose = setTimeout(function () {
@@ -139,17 +155,21 @@ define(['underscore', 'settings'], function (_, settings) {
         tabmanager.scheduleNextClose();
     };
 
-    tabmanager.unscheduleLatestClose = function () {
+    var unscheduleLatestClose = function (windowId) {
 
         var scheduledTabs = _.filter(tabmanager.openTabs, function (tab) {
             return _.has(tab, 'scheduledClose');
         });
 
+        if (settings.get('countPerWindow')) {
+            scheduledTabs = _.filter(scheduledTabs, function (tab) { return tab.windowId == windowId })
+        }
+
         if (_.size(scheduledTabs) > 0) {
             var latestTab = _.max(scheduledTabs, function (tab) {
                 return tab.time;
             });
-            tabmanager.unscheduleTab(latestTab);
+            unscheduleTab(latestTab);
         }
     };
 
@@ -157,10 +177,10 @@ define(['underscore', 'settings'], function (_, settings) {
         var scheduledTabs = _.filter(tabmanager.openTabs, function (tab) {
             return _.has(tab, 'scheduledClose');
         });
-        _.map(scheduledTabs, tabmanager.unscheduleTab);
+        _.map(scheduledTabs, unscheduleTab);
     };
 
-    tabmanager.unscheduleTab = function (tab) {
+    var unscheduleTab = function (tab) {
         clearTimeout(tab.scheduledClose);
         delete tab['scheduledClose'];
     };
@@ -171,7 +191,7 @@ define(['underscore', 'settings'], function (_, settings) {
         } else {
             chrome.storage.local.get({savedTabs: []}, function (items) {
                 tabmanager.closedTabs.tabs = items.savedTabs;
-                tabmanager.updateClosedCount();
+                updateClosedCount();
             });
         }
     };
@@ -179,7 +199,7 @@ define(['underscore', 'settings'], function (_, settings) {
     tabmanager.closedTabs.removeTab = function (tabId) {
         tabmanager.closedTabs.tabs.splice(findPositionById(tabmanager.closedTabs, tabId), 1);
         chrome.storage.local.set({savedTabs: tabmanager.closedTabs.tabs});
-        tabmanager.updateClosedCount();
+        updateClosedCount();
     };
 
     var findPositionById = function (tabs, id) {
@@ -194,7 +214,7 @@ define(['underscore', 'settings'], function (_, settings) {
     tabmanager.closedTabs.clear = function () {
         tabmanager.closedTabs.tabs = [];
         chrome.storage.local.remove('savedTabs');
-        tabmanager.updateClosedCount();
+        updateClosedCount();
     };
 
     tabmanager.closedTabs.removeDuplicate = function (url) {
@@ -210,7 +230,7 @@ define(['underscore', 'settings'], function (_, settings) {
         var tabToOpen = tabmanager.closedTabs.tabs.shift();
         chrome.tabs.create({active: true, url: tabToOpen.url});
         chrome.storage.local.set({savedTabs: tabmanager.closedTabs.tabs});
-        tabmanager.updateClosedCount();
+        updateClosedCount();
     };
 
     tabmanager.isWhitelisted = function (url) {
@@ -220,35 +240,37 @@ define(['underscore', 'settings'], function (_, settings) {
         });
     };
 
-    tabmanager.lockTab = function (tabId) {
+    tabmanager.toggleTabLock = function (tabId) {
+        if (tabmanager.isLocked(tabId)) {
+            unlockTab(tabId)
+        } else {
+            lockTab(tabId)
+        }
+    };
+
+    var lockTab = function (tabId) {
         var tab = tabmanager.openTabs[tabId];
         tab.locked = true;
 
         if (_.has(tab, 'scheduledClose')) {
-            tabmanager.unscheduleTab(tab);
-            tabmanager.scheduleNextClose();
+            unscheduleTab(tab);
+            tabmanager.scheduleNextClose(tab.windowId);
         }
     };
 
-    tabmanager.unlockTab = function (tabId) {
-        tabmanager.openTabs[tabId].locked = false;
-        tabmanager.unscheduleLatestClose();
-        tabmanager.scheduleNextClose();
-    };
+    var unlockTab = function (tabId) {
+        var tab = tabmanager.openTabs[tabId];
+        tab.locked = false;
 
-    tabmanager.toggleTabLock = function (tabId) {
-        if (tabmanager.isLocked(tabId)) {
-            tabmanager.unlockTab(tabId)
-        } else {
-            tabmanager.lockTab(tabId)
-        }
+        unscheduleLatestClose(tab.windowId);
+        tabmanager.scheduleNextClose(tab.windowId);
     };
 
     tabmanager.isLocked = function (tabId) {
         return tabmanager.openTabs[tabId].locked;
     };
 
-    tabmanager.updateClosedCount = function () {
+    var updateClosedCount = function () {
         if (settings.get('showBadgeCount') == false) {
             return;
         }
@@ -257,6 +279,26 @@ define(['underscore', 'settings'], function (_, settings) {
             storedTabs = '';
         }
         chrome.browserAction.setBadgeText({text: storedTabs.toString()});
+    };
+
+    tabmanager.detachTab = function (tabId) {
+        if (settings.get('countPerWindow')) {
+            var tab = tabmanager.openTabs[tabId];
+
+            if (_.has(tab, 'scheduledClose')) {
+                unscheduleTab(tab);
+            } else {
+                unscheduleLatestClose(tab.windowId)
+            }
+        }
+    };
+
+    tabmanager.attachTab = function (tabId, attachInfo) {
+        if (settings.get('countPerWindow')) {
+            var tab = tabmanager.openTabs[tabId];
+            tab.windowId = attachInfo.newWindowId;
+            tabmanager.scheduleNextClose(attachInfo.newWindowId);
+        }
     };
 
     return tabmanager;

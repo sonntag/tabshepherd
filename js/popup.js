@@ -243,6 +243,16 @@ Object.defineProperties(SettingsController.prototype, {
         set: function (val) {
             this.TW.settings.set('removeCorralDupes', val)
         }
+    },
+    countPerWindow: {
+        enumerable: true,
+        configurable: false,
+        get: function () {
+            return this.TW.settings.get('countPerWindow');
+        },
+        set: function (val) {
+            this.TW.settings.set('countPerWindow', val);
+        }
     }
 });
 

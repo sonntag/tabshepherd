@@ -11,6 +11,7 @@ define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager
         purgeClosedTabs: false, // Save closed tabs in between browser sessions.
         showBadgeCount: true, // Save closed tabs in between browser sessions.
         removeCorralDupes: true, // Remove duplicate tabs from the corral by comparing URL
+        countPerWindow: true,
         whitelist: [] // An array of patterns to check against.  If a URL matches a pattern, it is never locked.
     };
 
@@ -159,6 +160,11 @@ define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager
     settings.removeWhitelistByIndex = function (index) {
         cache.whitelist.splice(index, 1);
         settings.setwhitelist(cache.whitelist);
+    };
+
+    settings.setcountPerWindow = function (value) {
+        setValue('countPerWindow', value);
+        tabmanager.rescheduleAllTabs();
     };
 
     return settings;
