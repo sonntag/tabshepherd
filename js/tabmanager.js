@@ -197,7 +197,7 @@ define(['underscore', 'settings'], function (_, settings) {
     };
 
     tabmanager.closedTabs.removeTab = function (tabId) {
-        tabmanager.closedTabs.tabs.splice(findPositionById(tabmanager.closedTabs, tabId), 1);
+        tabmanager.closedTabs.tabs.splice(findPositionById(tabmanager.closedTabs.tabs, tabId), 1);
         chrome.storage.local.set({savedTabs: tabmanager.closedTabs.tabs});
         updateClosedCount();
     };

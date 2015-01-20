@@ -15,6 +15,9 @@ define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager
         whitelist: [] // An array of patterns to check against.  If a URL matches a pattern, it is never locked.
     };
 
+    var setters = {};
+    var getters = {};
+
     var cache = {};
 
     // Gets all settings from sync and stores them locally.
@@ -22,7 +25,7 @@ define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager
         chrome.storage.local.get({enableSync: settings.enableSync, paused: settings.paused}, function (sync) {
 
             settings.enableSync = sync.enableSync;
-            settings.setpaused(sync.paused);
+            setters.setpaused(sync.paused);
 
             if (settings.enableSync) {
                 chrome.storage.sync.get(defaults, function (items) {
@@ -48,8 +51,8 @@ define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager
     };
 
     settings.set = function (key, value) {
-        if (typeof settings['set' + key] == 'function') {
-            return settings['set' + key](value);
+        if (typeof setters['set' + key] == 'function') {
+            return setters['set' + key](value);
         }
         setValue(key, value)
     };
@@ -68,18 +71,18 @@ define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager
     };
 
     settings.get = function (key) {
-        if (typeof settings[key] == 'function') {
-            return settings[key]();
+        if (typeof getters[key] == 'function') {
+            return getters[key]();
         }
         return cache[key];
     };
 
-    settings.stayOpen = function () {
+    getters.stayOpen = function () {
         return parseInt(settings.get('minutesInactive')) * 60 * 1000;
     };
 
     /* Sets the enableSync attribute, which is only stored locally. */
-    settings.setenableSync = function (value) {
+    setters.setenableSync = function (value) {
         if (settings.enableSync == value) {
             return;
         }
@@ -96,7 +99,7 @@ define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager
         });
     };
 
-    settings.setpaused = function (value) {
+    setters.setpaused = function (value) {
         if (settings.paused == value) {
             return
         }
@@ -114,7 +117,7 @@ define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager
         })
     };
 
-    settings.setminutesInactive = function (value) {
+    setters.setminutesInactive = function (value) {
         if (isNaN(parseInt(value)) || parseInt(value) < 0) {
             throw Error("Minutes Inactive must be at least 0");
         }
@@ -125,7 +128,7 @@ define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager
         require('tabmanager').rescheduleAllTabs();
     };
 
-    settings.setminTabs = function (value) {
+    setters.setminTabs = function (value) {
         if (isNaN(parseInt(value)) || parseInt(value) < 1) {
             throw Error("Minimum tabs must be a number that is greater than 0");
         }
@@ -139,7 +142,7 @@ define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager
         require('tabmanager').scheduleNextClose();
     };
 
-    settings.setshowBadgeCount = function (value) {
+    setters.setshowBadgeCount = function (value) {
         if (value == false) {
             // Clear out the current badge setting
             chrome.browserAction.setBadgeText({text: ""});
@@ -147,14 +150,14 @@ define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager
         setValue('showBadgeCount', value);
     };
 
-    settings.setwhitelist = function (value) {
+    setters.setwhitelist = function (value) {
         setValue('whitelist', value);
         require('tabmanager').rescheduleAllTabs();
     };
 
     settings.addWhitelist = function (value) {
         cache.whitelist.push(value);
-        settings.setwhitelist(cache.whitelist);
+        setters.setwhitelist(cache.whitelist);
     };
 
     settings.removeWhitelistByIndex = function (index) {
@@ -162,7 +165,7 @@ define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager
         settings.setwhitelist(cache.whitelist);
     };
 
-    settings.setcountPerWindow = function (value) {
+    setters.setcountPerWindow = function (value) {
         setValue('countPerWindow', value);
         tabmanager.rescheduleAllTabs();
     };
