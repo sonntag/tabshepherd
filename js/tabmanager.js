@@ -1,10 +1,8 @@
-define(['underscore', 'settings'], function (_, settings) {
+define(['underscore', 'corralmanager', 'settings'], function (_, corralmanager, settings) {
 
     var tabmanager = {};
 
     tabmanager.openTabs = {};
-    tabmanager.closedTabs = {tabs: []};
-    tabmanager.filters = {};
 
     tabmanager.getTime = function (tabId) {
         return tabmanager.openTabs[tabId].time;
@@ -81,12 +79,7 @@ define(['underscore', 'settings'], function (_, settings) {
     tabmanager.wrangleAndClose = function (tabId) {
         chrome.tabs.get(tabId, function (tab) {
             chrome.tabs.remove(tabId, function () {
-
-                var tabToSave = _.extend(tab, {closedAt: new Date().getTime()});
-                tabmanager.closedTabs.tabs.unshift(tabToSave);
-
-                chrome.storage.local.set({savedTabs: tabmanager.closedTabs.tabs});
-                updateClosedCount();
+                corralmanager.wrangleTab(tab);
             });
         });
     };
@@ -185,54 +178,6 @@ define(['underscore', 'settings'], function (_, settings) {
         delete tab['scheduledClose'];
     };
 
-    tabmanager.closedTabs.init = function () {
-        if (settings.get('purgeClosedTabs')) {
-            chrome.storage.local.remove('savedTabs');
-        } else {
-            chrome.storage.local.get({savedTabs: []}, function (items) {
-                tabmanager.closedTabs.tabs = items.savedTabs;
-                updateClosedCount();
-            });
-        }
-    };
-
-    tabmanager.closedTabs.removeTab = function (tabId) {
-        tabmanager.closedTabs.tabs.splice(findPositionById(tabmanager.closedTabs.tabs, tabId), 1);
-        chrome.storage.local.set({savedTabs: tabmanager.closedTabs.tabs});
-        updateClosedCount();
-    };
-
-    var findPositionById = function (tabs, id) {
-        for (var i = 0; i < tabs.length; i++) {
-            if (tabs[i].id == id) {
-                return i;
-            }
-        }
-        return -1;
-    };
-
-    tabmanager.closedTabs.clear = function () {
-        tabmanager.closedTabs.tabs = [];
-        chrome.storage.local.remove('savedTabs');
-        updateClosedCount();
-    };
-
-    tabmanager.closedTabs.removeDuplicate = function (url) {
-        var tabsToRemove = _.filter(tabmanager.closedTabs.tabs, function (tab) {
-            return tab.url == url;
-        });
-
-        var tabIdsToRemove = _.pluck(tabsToRemove, 'id');
-        _.map(tabIdsToRemove, tabmanager.closedTabs.removeTab);
-    };
-
-    tabmanager.closedTabs.openLatestTab = function () {
-        var tabToOpen = tabmanager.closedTabs.tabs.shift();
-        chrome.tabs.create({active: true, url: tabToOpen.url});
-        chrome.storage.local.set({savedTabs: tabmanager.closedTabs.tabs});
-        updateClosedCount();
-    };
-
     tabmanager.isWhitelisted = function (url) {
         var whitelist = settings.get("whitelist");
         return _.any(whitelist, function (item) {
@@ -268,17 +213,6 @@ define(['underscore', 'settings'], function (_, settings) {
 
     tabmanager.isLocked = function (tabId) {
         return tabmanager.openTabs[tabId].locked;
-    };
-
-    var updateClosedCount = function () {
-        if (settings.get('showBadgeCount') == false) {
-            return;
-        }
-        var storedTabs = tabmanager.closedTabs.tabs.length;
-        if (storedTabs == 0) {
-            storedTabs = '';
-        }
-        chrome.browserAction.setBadgeText({text: storedTabs.toString()});
     };
 
     tabmanager.detachTab = function (tabId) {

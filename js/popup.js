@@ -58,7 +58,7 @@ var CorralController = function (TW) {
 
     this.reopenTab = function (tab) {
         chrome.tabs.create({active: false, url: tab.url});
-        TW.TabManager.closedTabs.removeTab(tab.id);
+        TW.corralmanager.removeTab(tab.id);
     };
 
     this.restoreAll = function (tabs) {
@@ -66,7 +66,7 @@ var CorralController = function (TW) {
     };
 
     this.removeTab = function (tab) {
-        TW.TabManager.closedTabs.removeTab(tab.id)
+        TW.corralmanager.removeTab(tab.id)
     };
 
     this.isEmpty = function () {
@@ -74,7 +74,7 @@ var CorralController = function (TW) {
     };
 
     this.clearList = function () {
-        TW.TabManager.closedTabs.clear()
+        TW.corralmanager.clear()
     };
 };
 
@@ -82,7 +82,7 @@ Object.defineProperty(CorralController.prototype, 'closedTabs', {
     enumerable: true,
     configurable: false,
     get: function () {
-        return this.TW.TabManager.closedTabs.tabs
+        return this.TW.corralmanager.tabs
     }
 });
 

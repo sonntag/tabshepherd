@@ -13,10 +13,11 @@ require.config({
 // This is used to expose the background page to the popup
 var TW = TW || {};
 
-require(['underscore', 'tabmanager', 'settings', 'contextmenu', 'updater'],
-    function (_, tabmanager, settings, contextmenu, updater) {
+require(['underscore', 'tabmanager', 'corralmanager', 'settings', 'contextmenu', 'updater'],
+    function (_, tabmanager, corralmanager, settings, contextmenu, updater) {
 
         TW.TabManager = tabmanager;
+        TW.corralmanager = corralmanager;
         TW.settings = settings;
 
         chrome.runtime.onInstalled.addListener(function (details) {
@@ -28,7 +29,7 @@ require(['underscore', 'tabmanager', 'settings', 'contextmenu', 'updater'],
         });
 
         settings.init();
-        tabmanager.closedTabs.init();
+        corralmanager.init();
 
         // Move this to a function somewhere so we can restart the process.
         chrome.tabs.query({windowType: 'normal', pinned: false}, tabmanager.initTabs);
@@ -49,7 +50,7 @@ require(['underscore', 'tabmanager', 'settings', 'contextmenu', 'updater'],
         // Handler for removing duplicate tabs from the corral
         chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
             if (settings.get('removeCorralDupes') && _.has(changeInfo, 'url')) {
-                tabmanager.closedTabs.removeDuplicate(changeInfo.url);
+                corralmanager.removeDuplicate(changeInfo.url);
             }
         });
 
@@ -70,7 +71,7 @@ require(['underscore', 'tabmanager', 'settings', 'contextmenu', 'updater'],
 
         chrome.commands.onCommand.addListener(function (command) {
             if (command == 'reopen-corral-tab') {
-                tabmanager.closedTabs.openLatestTab();
+                corralmanager.openLatestTab();
             }
         });
 
