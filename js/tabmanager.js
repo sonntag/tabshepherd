@@ -4,6 +4,9 @@ define(['underscore', 'corralmanager', 'settings'], function (_, corralmanager, 
 
     tabmanager.openTabs = {};
 
+    var isMaxExceeded = false;
+    var maxExceededTimestamp;
+
     tabmanager.getTime = function (tabId) {
         return tabmanager.openTabs[tabId].time;
     };
@@ -60,6 +63,14 @@ define(['underscore', 'corralmanager', 'settings'], function (_, corralmanager, 
         }
 
         delete tabmanager.openTabs[tabId];
+
+        if (isMaxExceeded && !scheduledTabExists()) {
+            isMaxExceeded = false;
+        }
+    };
+
+    var scheduledTabExists = function () {
+        return _.some(_.values(tabmanager.openTabs), function (tab) { _.has(tab, 'scheduledClose') })
     };
 
     tabmanager.replaceTab = function (addedTabId, removedTabId) {
@@ -119,6 +130,11 @@ define(['underscore', 'corralmanager', 'settings'], function (_, corralmanager, 
             return [];
         } else {
 
+            if (!isMaxExceeded) {
+                maxExceededTimestamp = new Date();
+                isMaxExceeded = true;
+            }
+
             /* Do not schedule any tabs that are active, locked, or whitelisted. */
             var canSchedule = _.reject(tabs, function (tab) {
                 return tab.active || tabmanager.isLocked(tab.id) || tabmanager.isWhitelisted(tab.url);
@@ -136,11 +152,23 @@ define(['underscore', 'corralmanager', 'settings'], function (_, corralmanager, 
 
     var scheduleToClose = function (tab) {
         if (!_.has(tabmanager.openTabs[tab.id], 'scheduledClose')) {
-            var timeout = tabmanager.getTime(tab.id).getTime() + settings.get('stayOpen') - new Date();
-            tabmanager.openTabs[tab.id].scheduledClose = setTimeout(function () {
-                tabmanager.wrangleAndClose(tab.id);
-            }, timeout);
+            var timeToClose = calculateCloseTime(tab);
+            var now = new Date();
+            tabmanager.openTabs[tab.id].scheduledClose = {
+                timeout: setTimeout(function () { tabmanager.wrangleAndClose(tab.id) }, timeToClose - now),
+                closeTime: timeToClose
+            }
         }
+    };
+
+    var calculateCloseTime = function (tab) {
+        var lastAccessedTime = tabmanager.getTime(tab.id).getTime();
+        var maxExceededAt = maxExceededTimestamp.getTime();
+
+        var stayOpen = settings.get('stayOpen');
+        var maxExceededBuffer = settings.get('maxExceededTimeMilliseconds');
+
+        return Math.max(lastAccessedTime + stayOpen, maxExceededAt + maxExceededBuffer);
     };
 
     tabmanager.rescheduleAllTabs = function () {
@@ -174,7 +202,7 @@ define(['underscore', 'corralmanager', 'settings'], function (_, corralmanager, 
     };
 
     var unscheduleTab = function (tab) {
-        clearTimeout(tab.scheduledClose);
+        clearTimeout(tab.scheduledClose.timeout);
         delete tab['scheduledClose'];
     };
 

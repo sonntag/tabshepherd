@@ -197,6 +197,14 @@
                 </p>
 
                 <p>
+                    <label for="maxExceededTime">When max tabs are exceeded, wait at least:</label>
+                    <input type="text" id="maxExceededTime" class="span1" ng-model="settingsCtrl.maxExceededTime"
+                           ng-model-options="{ debounce: 500 }" integer min="0" required
+                           ng-blur="settingsCtrl.resetMaxExceededTime()"/>
+                    minutes before closing expired tabs.
+                </p>
+
+                <p>
                     <label for="purgeClosedTabs" class="checkbox">Clear tab corral on quit
                         <input type="checkbox" id="purgeClosedTabs" class="span1"
                                ng-model="settingsCtrl.purgeClosedTabs"/>

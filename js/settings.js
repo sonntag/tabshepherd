@@ -8,6 +8,7 @@ define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager
     var defaults = {
         minutesInactive: 20, // How many minutes before we consider a tab "stale" and ready to close.
         minTabs: 5, // Stop acting if there are only minTabs tabs open.
+        maxExceededTime: 5, // How many minutes max tabs can be exceeded before tabs start to close.
         purgeClosedTabs: false, // Save closed tabs in between browser sessions.
         showBadgeCount: true, // Save closed tabs in between browser sessions.
         removeCorralDupes: true, // Remove duplicate tabs from the corral by comparing URL
@@ -79,6 +80,10 @@ define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager
 
     getters.stayOpen = function () {
         return parseInt(settings.get('minutesInactive')) * 60 * 1000;
+    };
+
+    getters.maxExceededTimeMilliseconds = function () {
+        return parseInt(settings.get('maxExceededTime')) * 60 * 1000;
     };
 
     /* Sets the enableSync attribute, which is only stored locally. */
@@ -167,7 +172,16 @@ define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager
 
     setters.setcountPerWindow = function (value) {
         setValue('countPerWindow', value);
-        tabmanager.rescheduleAllTabs();
+        require('tabmanager').rescheduleAllTabs();
+    };
+
+    setters.setmaxExceededTime = function (value) {
+        if (isNaN(parseInt(value)) || parseInt(value) < 0) {
+            throw Error("Max exceeded time must be at least 0");
+        }
+
+        setValue('maxExceededTime', value);
+        require('tabmanager').rescheduleAllTabs();
     };
 
     return settings;

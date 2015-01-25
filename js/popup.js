@@ -102,9 +102,9 @@ var LockController = function ($q, TW) {
     });
 
     self.getTimeLeft = function (tab) {
-        var cutOff = new Date().getTime() - TW.settings.get('stayOpen');
-        var lastModified = TW.TabManager.getTime(tab.id);
-        return (lastModified - cutOff) / 1000;
+        var now = new Date().getTime();
+        var timeToClose = TW.TabManager.openTabs[tab.id].scheduledClose.closeTime;
+        return (timeToClose - now) / 1000;
     };
 
     self.isChecked = function (tab) {
@@ -167,6 +167,7 @@ var SettingsController = function (TW) {
     this.TW = TW;
     this._minutesInactive = TW.settings.get('minutesInactive');
     this._minTabs = TW.settings.get('minTabs');
+    this._maxExceededTime = TW.settings.get('maxExceededTime');
 
     this.resetMinutesInactive = function () {
         this._minutesInactive = TW.settings.get('minutesInactive');
@@ -175,6 +176,10 @@ var SettingsController = function (TW) {
     this.resetMinTabs = function () {
         this._minTabs = TW.settings.get('minTabs');
     };
+
+    this.resetMaxExceededTime = function () {
+        this._maxExceededTime = TW.settings.get('maxExceededTime');
+    }
 };
 
 Object.defineProperties(SettingsController.prototype, {
@@ -201,6 +206,18 @@ Object.defineProperties(SettingsController.prototype, {
             this._minTabs = val;
             if (val !== undefined) {
                 this.TW.settings.set('minTabs', val)
+            }
+        }
+    },
+    maxExceededTime: {
+        enumerable: true,
+        get: function () {
+            return this._maxExceededTime;
+        },
+        set: function (val) {
+            this._maxExceededTime = val;
+            if (val !== undefined) {
+                this.TW.settings.set('maxExceededTime', val)
             }
         }
     },
