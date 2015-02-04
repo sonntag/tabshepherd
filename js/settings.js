@@ -116,7 +116,7 @@ define(['underscore', 'require', 'tabmanager'], function (_, require, tabmanager
                 require('tabmanager').unscheduleAllTabs();
                 chrome.browserAction.setIcon({'path': 'img/icon-paused.png'});
             } else {
-                require('tabmanager').scheduleNextClose();
+                require('tabmanager').resetMaxExceededTime();
                 chrome.browserAction.setIcon({'path': 'img/icon.png'});
             }
         })

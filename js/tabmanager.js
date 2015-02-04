@@ -263,5 +263,13 @@ define(['underscore', 'corralmanager', 'settings'], function (_, corralmanager, 
         }
     };
 
+    tabmanager.resetMaxExceededTime = function () {
+        if (isMaxExceeded) {
+            maxExceededTimestamp = new Date();
+        }
+
+        tabmanager.rescheduleAllTabs();
+    };
+
     return tabmanager;
 });
